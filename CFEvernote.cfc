@@ -26,7 +26,7 @@ THE SOFTWARE.
 		variables.apiAccount = "";
 	</cfscript>
 
-	<cffunction name="init" returntype="void" access="public" hint="Default constructor for the cfevernote plugin">
+	<cffunction name="init" returntype="CFEvernote" access="public" hint="Default constructor for the cfevernote plugin">
 		<cfargument name="apiKey" type="string" required="false" default="" />
 		<cfargument name="apiAccount" type="string" required="false" default="" />
 		<cfscript>
@@ -35,6 +35,8 @@ THE SOFTWARE.
 			
 			if(arguments.apiAccount neq "")
 				variables.apiAccount = arguments.apiAccount;
+				
+			return this;
 		</cfscript>
 	</cffunction>
 	
