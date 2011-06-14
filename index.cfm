@@ -1,1 +1,11 @@
-<cfdump var="#application#">
+<cfsetting showdebugoutput="false" />
+<cfinvoke component="mxunit.runner.DirectoryTestSuite"
+          method="run"
+          directory="#expandPath('.')#"
+          recurse="true"
+          excludes=""
+          returnvariable="results" />
+          
+<cfoutput>
+	#results#
+</cfoutput>

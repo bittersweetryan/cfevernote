@@ -28,14 +28,40 @@ THE SOFTWARE.
 
 	<cffunction name="init" returntype="void" access="public" hint="Default constructor for the cfevernote plugin">
 		<cfargument name="apiKey" type="string" required="false" default="" />
-		</cfargument name="apiAccount" type="string" required="false" default="" />
+		<cfargument name="apiAccount" type="string" required="false" default="" />
 		<cfscript>
-			if(arguments.apiKey != "")
+			if(arguments.apiKey neq "")
 				variables.apiKey = arguments.apiKey;
 			
-			if(arguments.apiAccount != "")
+			if(arguments.apiAccount neq "")
 				variables.apiAccount = arguments.apiAccount;
 		</cfscript>
 	</cffunction>
 	
+	
+	<cffunction name="getApiKey" returntype="string" roles="" access="public" output="false" displayname="" hint="" description="">
+		<cfscript>
+			return variables.apiKey;
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="setApiKey" returntype="void" roles="" access="public" output="false" displayname="" hint="" description="">
+		<cfargument name="apiKey" type="String" required="false" default="" displayname="" hint="" />
+		<cfscript>
+			variables.apiKey = arguments.apiKey;
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="getApiAccount" returntype="string" roles="" access="public" output="false" displayname="" hint="" description="">
+		<cfscript>
+			return variables.apiAccount;
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="setApiAccount" returntype="void" roles="" access="public" output="false" displayname="" hint="" description="">
+		<cfargument name="apiAccount" type="String" required="false" default="" displayname="" hint="" />
+		<cfscript>
+			variables.apiAccount = arguments.apiAccount;
+		</cfscript>
+	</cffunction>
 </cfcomponent>
