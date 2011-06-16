@@ -24,6 +24,13 @@ THE SOFTWARE.
 	<cfscript>
 		variables.apiKey = "";
 		variables.apiAccount = "";
+		variables.userStoreURL = "";
+		variables.userStorURLBase = "";
+		
+		variables.major = 0;
+		variables.minor = 1;
+		
+		variables.userAgent = "CFEvernote (ColdFusion) " & variables.major & "." & variables.minor;
 	</cfscript>
 
 	<cffunction name="init" returntype="CFEvernote" access="public" hint="Default constructor for the cfevernote plugin">
@@ -35,7 +42,7 @@ THE SOFTWARE.
 			
 			if(arguments.apiAccount neq "")
 				variables.apiAccount = arguments.apiAccount;
-				
+					
 			return this;
 		</cfscript>
 	</cffunction>

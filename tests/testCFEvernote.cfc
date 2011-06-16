@@ -8,6 +8,22 @@
 			variables.cfEvernote = new CFEvernote();
 		</cfscript>		
 	</cffunction>
+	d
+	<cffunction name="testInitSettingKeyandAccountReturnsExpectedResult" returntype="void" access="public" output="false" >
+		<cfscript>
+			variables.cfEvernote.Init("CDA321","bittersweetdev");
+			
+			expected = "CDA321";
+			actual = variables.cfEvernote.getApiKey();
+			
+			assertEquals(expected, actual);
+			
+			expected = "bittersweetdev";
+			actual = variables.cfEvernote.getApiAccount();
+			
+			assertEquals(expected,actual);
+		</cfscript>
+	</cffunction>
 	
 	<cffunction name="testSettingAPIKeyReturnsCorrectAPIKey" returntype="void" access="public" output="false">
 		<cfscript>
