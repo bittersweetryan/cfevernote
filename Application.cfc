@@ -2,14 +2,14 @@
 	<cfscript>
 		this.seperator = "";
 		this.name = "cfevernote"; 
+		
+		this.seperator = createObject("java","java.lang.System").getProperty("file.separator");
+		this.mappings["/"] = expandpath(".") & this.seperator;
+		
 	</cfscript>
 	
 	<cffunction name="OnApplicationStart" access="public" returntype="boolean" output="false">
 		<cfscript>
-			
-			this.seperator = createObject("java","java.lang.System").getProperty("file.separator");
-			this.mappings["/"] = expandpath(".") & this.seperator;
-			
 			return true;
 		</cfscript>
 	</cffunction>

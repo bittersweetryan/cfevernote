@@ -5,14 +5,12 @@
 	
 	<cffunction name="setup" access="public" output="false" returntype="void">
 		<cfscript>
-			variables.cfEvernote = new CFEvernote();
+			variables.cfEvernote = new CFEvernote().Init("CDA321","bittersweetdev","sandbox.evernote.com");
 		</cfscript>		
 	</cffunction>
 	d
 	<cffunction name="testInitSettingKeyandAccountReturnsExpectedResult" returntype="void" access="public" output="false" >
 		<cfscript>
-			variables.cfEvernote.Init("CDA321","bittersweetdev");
-			
 			expected = "CDA321";
 			actual = variables.cfEvernote.getApiKey();
 			
@@ -20,7 +18,7 @@
 			
 			expected = "bittersweetdev";
 			actual = variables.cfEvernote.getApiAccount();
-			
+					
 			assertEquals(expected,actual);
 		</cfscript>
 	</cffunction>
@@ -42,6 +40,26 @@
 			
 			variables.cfEvernote.setAPIAccount("bittersweetryan");
 			actual = variables.cfEvernote.getAPIAccount();
+			
+			assertEquals(expected,actual);
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testGetUserStoreURL" returntype="void" access="public" output="false">
+		<cfscript>
+			expected = "https://sandbox.evernote.com/edam/user";
+			
+			actual = variables.cfEvernote.getUserStoreURL();
+			
+			assertEquals(expected,actual);
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testGetUserStoreURLBase" returntype="void" access="public" output="false">
+		<cfscript>
+			expected = "https://sandbox.evernote.com/edam/note/";
+			
+			actual = variables.cfEvernote.getUserStoreURLBase();
 			
 			assertEquals(expected,actual);
 		</cfscript>

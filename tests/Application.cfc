@@ -10,6 +10,8 @@
 	
 	<cffunction name="OnApplicationStart" access="public" returntype="boolean" output="false">
 		<cfscript>
+			application.seperator = this.seperator;
+		
 			return true;
 		</cfscript>
 	</cffunction>

@@ -24,25 +24,43 @@ THE SOFTWARE.
 	<cfscript>
 		variables.apiKey = "";
 		variables.apiAccount = "";
+		variables.evernoteHost = "";
 		variables.userStoreURL = "";
 		variables.userStorURLBase = "";
+		
+		variables.userStoreQueryLink = "/edam/user";
+		variables.userStoreBaseQueryLink = "/edam/note/";
 		
 		variables.major = 0;
 		variables.minor = 1;
 		
 		variables.userAgent = "CFEvernote (ColdFusion) " & variables.major & "." & variables.minor;
+		
+		variables.jarPath = [expandPath("\") & "lib" & application.seperator & "evernote-api-1.18.jar"];
+		variables.javaLoader = createObject("component","JavaLoader").init(jarPath);
+		
+		variables.userStore = variables.javaLoader.create("com.evernote.edam.userstore.UserStore");
+		variables.noteStore = variables.javaLoader.create("com.evernote.edam.notestore.NoteStore");
 	</cfscript>
 
 	<cffunction name="init" returntype="CFEvernote" access="public" hint="Default constructor for the cfevernote plugin">
 		<cfargument name="apiKey" type="string" required="false" default="" />
 		<cfargument name="apiAccount" type="string" required="false" default="" />
+		<cfargument name="evernoteHost" type="string" required="false" default="" />
 		<cfscript>
 			if(arguments.apiKey neq "")
 				variables.apiKey = arguments.apiKey;
 			
 			if(arguments.apiAccount neq "")
 				variables.apiAccount = arguments.apiAccount;
-					
+			
+			if(arguments.evernoteHost neq ""){
+				variables.evenoteHost = arguments.evernoteHost;
+				
+				variables.userStoreURL = "https://" & arguments.evernoteHost &  variables.userStoreQueryLink;
+				variables.userStoreURLBase = "https://" & arguments.evernoteHost & variables.userStoreBaseQueryLink;
+			}
+							
 			return this;
 		</cfscript>
 	</cffunction>
@@ -71,6 +89,18 @@ THE SOFTWARE.
 		<cfargument name="apiAccount" type="String" required="false" default="" displayname="" hint="" />
 		<cfscript>
 			variables.apiAccount = arguments.apiAccount;
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="getUserStoreURL" returntype="String" access="public" output="false">
+		<cfscript>
+			return variables.userStoreURL;
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="getUserStoreURLBase" returntype="String" access="public" output="false">
+		<cfscript>
+			return variables.userStoreURLBase;
 		</cfscript>
 	</cffunction>
 </cfcomponent>
