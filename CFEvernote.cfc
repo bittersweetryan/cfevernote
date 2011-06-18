@@ -73,10 +73,12 @@ THE SOFTWARE.
 		<cfargument name="username" type="String" required="false" default="" hint="evernote username" />		
 		<cfargument name="password" type="String" required="false" default="" hint="evernote password" />
 		<cfscript>
-			client = javaLoader.create("org.apache.thrift.transport.THttpClient").init(variables.userStoreURL);
-			client.setCustomHeader("User-Agent",variables.userAgent);
+			httpClient = javaLoader.create("org.apache.thrift.transport.THttpClient").init(variables.userStoreURL);
+			httpClient.setCustomHeader("User-Agent",variables.userAgent);
 			
-			protocol = javaLoader.create("org.apache.thrift.transport.TBinaryProtocol").init(client);
+			protocol = javaLoader.create("org.apache.thrift.protocol.TBinaryProtocol").init(httpClient);
+			
+			return true;
 		</cfscript>
 	</cffunction>	
 	
