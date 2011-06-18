@@ -73,6 +73,7 @@ THE SOFTWARE.
 		<cfargument name="username" type="String" required="false" default="" hint="evernote username" />		
 		<cfargument name="password" type="String" required="false" default="" hint="evernote password" />
 		<cfscript>
+			//TODO: put these in the variables scope so we can mock them out for better testing
 			httpClient = javaLoader.create("org.apache.thrift.transport.THttpClient").init(variables.userStoreURL);
 			httpClient.setCustomHeader("User-Agent",variables.userAgent);
 			
