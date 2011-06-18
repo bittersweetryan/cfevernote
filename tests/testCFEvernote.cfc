@@ -3,12 +3,15 @@
 		variables.cfEvernote = "";	
 	</cfscript>
 	
+	<cffile action="read" file="#expandPath('/')#config.txt" variable="filecontents" />
+	<cfset configArray = listToArray(filecontents)/>
+
 	<cffunction name="setup" access="public" output="false" returntype="void">
 		<cfscript>
 			variables.cfEvernote = new CFEvernote().Init("CDA321","bittersweetdev","sandbox.evernote.com");
 		</cfscript>		
 	</cffunction>
-	d
+	
 	<cffunction name="testInitSettingKeyandAccountReturnsExpectedResult" returntype="void" access="public" output="false" >
 		<cfscript>
 			expected = "CDA321";
@@ -64,4 +67,14 @@
 			assertEquals(expected,actual);
 		</cfscript>
 	</cffunction>
+	
+	<cffunction name="testAuthenticate" returntype="void" access="public" output="false" hint="test authentication" >
+		<cfscript>
+			//not sure about the composition of this function, creating the tsclient in the function doesn't make it
+			//very testable
+			
+			variables.cfEvernote.Authenticate(variables.configArray[1],variables.configArray[2]);
+		</cfscript>
+	</cffunction>
+		
 </cfcomponent>

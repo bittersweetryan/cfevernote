@@ -26,7 +26,7 @@ THE SOFTWARE.
 		variables.apiAccount = "";
 		variables.evernoteHost = "";
 		variables.userStoreURL = "";
-		variables.userStorURLBase = "";
+		variables.userStorURLBase = "";				
 		
 		variables.userStoreQueryLink = "/edam/user";
 		variables.userStoreBaseQueryLink = "/edam/note/";
@@ -36,7 +36,8 @@ THE SOFTWARE.
 		
 		variables.userAgent = "CFEvernote (ColdFusion) " & variables.major & "." & variables.minor;
 		
-		variables.jarPath = [expandPath("\") & "lib" & application.seperator & "evernote-api-1.18.jar"];
+		variables.jarPath = [expandPath("\") & "lib" & application.seperator & "evernote-api-1.18.jar",
+							 expandPath("\") & "lib" & application.seperator & "libthrift.jar"];
 		variables.javaLoader = createObject("component","JavaLoader").init(jarPath);
 		
 		variables.userStore = variables.javaLoader.create("com.evernote.edam.userstore.UserStore");
@@ -64,8 +65,24 @@ THE SOFTWARE.
 			return this;
 		</cfscript>
 	</cffunction>
+
+	<!--------------------------------------------
+	*   	     Action Methods                  *
+	--------------------------------------------->
+	<cffunction name="authenticate" returntype="boolean" access="public" output="false" hint="I log  user into evernote using oauth">
+		<cfargument name="username" type="String" required="false" default="" hint="evernote username" />		
+		<cfargument name="password" type="String" required="false" default="" hint="evernote password" />
+		<cfscript>
+			client = javaLoader.create("org.apache.thrift.transport.THttpClient").init(variables.userStoreURL);
+			client.setCustomHeader("User-Agent",variables.userAgent);
+			
+			protocol = javaLoader.create("org.apache.thrift.transport.TBinaryProtocol").init(client);
+		</cfscript>
+	</cffunction>	
 	
-	
+	<!--------------------------------------------
+	*   	     Mutaters and Accessors          *
+	--------------------------------------------->
 	<cffunction name="getApiKey" returntype="string" roles="" access="public" output="false" displayname="" hint="" description="">
 		<cfscript>
 			return variables.apiKey;
