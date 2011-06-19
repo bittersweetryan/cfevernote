@@ -40,7 +40,10 @@ THE SOFTWARE.
 							 expandPath("\") & "lib" & application.seperator & "libthrift.jar"];
 		variables.javaLoader = createObject("component","JavaLoader").init(jarPath);
 		
-		variables.userStore = variables.javaLoader.create("com.evernote.edam.userstore.UserStore");
+		variables.userStore = variables.javaLoader.create("com.evernote.edam.userstore.UserStore").init();
+
+		writedump(var=variables.userStore,abort=true);
+
 		variables.noteStore = variables.javaLoader.create("com.evernote.edam.notestore.NoteStore");
 	</cfscript>
 
@@ -73,11 +76,11 @@ THE SOFTWARE.
 		<cfargument name="username" type="String" required="false" default="" hint="evernote username" />		
 		<cfargument name="password" type="String" required="false" default="" hint="evernote password" />
 		<cfscript>
-			//TODO: put these in the variables scope so we can mock them out for better testing
+			
 			httpClient = javaLoader.create("org.apache.thrift.transport.THttpClient").init(variables.userStoreURL);
 			httpClient.setCustomHeader("User-Agent",variables.userAgent);
 			
-			protocol = javaLoader.create("org.apache.thrift.protocol.TBinaryProtocol").init(httpClient);
+			userStoreProtocol = javaLoader.create("org.apache.thrift.protocol.TBinaryProtocol").init(httpClient);
 			
 			return true;
 		</cfscript>
