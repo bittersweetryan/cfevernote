@@ -24,15 +24,13 @@ THE SOFTWARE.
 	<cfscript>
 		variables.apiKey = "";
 		variables.apiAccount = "";
+		
 		variables.evernoteHost = "";
 		variables.userStoreURL = "";
-		variables.userStorURLBase = "";				
+		variables.noteStorURLBase = "";				
 		
 		variables.userStoreQueryLink = "/edam/user";
-		variables.userStoreBaseQueryLink = "/edam/note/";
-		
-		variables.major = 0;
-		variables.minor = 1;
+		variables.noteStoreBaseQueryLink = "/edam/note/";
 		
 		variables.userAgent = "CFEvernote (ColdFusion) " & variables.major & "." & variables.minor;
 		
@@ -48,8 +46,8 @@ THE SOFTWARE.
 	</cfscript>
 
 	<cffunction name="init" returntype="CFEvernote" access="public" hint="Default constructor for the cfevernote plugin">
+		<cfargument name="apiAccount" type="string" required="false" default="" />	
 		<cfargument name="apiKey" type="string" required="false" default="" />
-		<cfargument name="apiAccount" type="string" required="false" default="" />
 		<cfargument name="evernoteHost" type="string" required="false" default="" />
 		<cfscript>
 			if(arguments.apiKey neq "")
