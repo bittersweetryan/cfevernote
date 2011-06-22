@@ -66,8 +66,19 @@
 	
 	<cffunction name="testAuthenticate" returntype="void" access="public" output="false" hint="test authentication" >
 		<cfscript>
-			variables.cfEvernote.Authenticate(variables.configArray[1],variables.configArray[2]);
+			//variables.cfEvernote.Authenticate(variables.configArray[1],variables.configArray[2]);
 		</cfscript>
 	</cffunction>
-		
+	
+	<cffunction name="testParseOAuthResponseReturnsToken" returntype="void" access="public" output="false" hint="test oauth response" >
+		<cfscript>
+			makePublic(variables.cfEvernote,"parseOauthTempTokenResponse");
+			
+			expected="testuser.130B763E6C0.687474703A2F2F6C6F63616C686F73742F6366657665726E6F74652F63616C6C6261636B2E63666D.BD5F4D71952B75C68799427C59754E72";
+			actual=variables.cfEvernote.parseOauthTempTokenResponse("oauth_token=testuser.130B763E6C0.687474703A2F2F6C6F63616C686F73742F6366657665726E6F74652F63616C6C6261636B2E63666D.BD5F4D71952B75C68799427C59754E72&oauth_token_secret=&oauth_callback_confirmed=true");
+			
+			assertEquals(expected,actual);
+		</cfscript>		
+	</cffunction>	
+
 </cfcomponent>

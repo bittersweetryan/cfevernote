@@ -76,18 +76,34 @@ THE SOFTWARE.
 	<cffunction name="authenticate" returntype="boolean" access="public" output="false" hint="I log  user into evernote using oauth">
 		<cfscript>
 			getTemporaryAuthTolken();
+			
 			return true;
 		</cfscript>
 	</cffunction>	
 	
 	<cffunction name="getTemporaryAuthTolken" returntype="String" access="private" output="false" hint="I get a temporary access tolken for o-auth" >
-		
-		<cfset oauth_nonce = hash(createUUID(),"md5") />
-
+		<!-- maybe refactor building url out to new method -->
 		<cfhttp url="#variables.evernoteOAuthURL#?oauth_consumer_key=#variables.apiAccount#&oauth_signature=#variables.apiKey#&oauth_signature_method=PLAINTEXT&
-					oauth_timestamp=#getTickCount()#&oauth_callback=#URLEncodedFormat(variables.callbackURL)#&oauth_nonce=#oauth_nonce#" result="oauthResult" />
-		
-		<cfdump var="#oauthResult#" abort="true">					
+					oauth_timestamp=#getTickCount()#&oauth_callback=#URLEncodedFormat(variables.callbackURL)#&oauth_nonce=#hash(createUUID(),'md5')#" result="oauthResult" />		
+					
+		<cfscript>
+			if(oauthResult.responseHeader.status_code neq 200){
+				return "";
+			}
+			else
+			{
+				parseOauthTempTokenResponse(oauth.fileContent);
+			}
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="parseOauthTempTokenResponse" returntype="String" access="private" output="false" hint="I take the response from the oauth temp responsoe and parse out the tolken" >
+		<cfargument name="oauthResponse" type="String" required="true" default="" hint="resonse from oauth" />
+		<cfscript>
+			var regexval = refindnocase('\oauth_token=(.*?)\&',arguments.oauthResponse,0,true);
+			
+			return mid(arguments.oauthResponse,regexval["pos"][2],regexval["len"][2]);
+		</cfscript>
 	</cffunction>
 	
 	<!--------------------------------------------
