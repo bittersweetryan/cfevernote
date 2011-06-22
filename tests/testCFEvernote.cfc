@@ -3,27 +3,13 @@
 		variables.cfEvernote = "";	
 	</cfscript>
 	
-	<cffile action="read" file="#expandPath('/')#config.txt" variable="filecontents" />
-	<cfset configArray = listToArray(filecontents)/>
+	<cffile action="read" file="#expandPath('/')#config.txt" variable="variables.filecontents" />
+	<cfset variables.configArray = listToArray(variables.filecontents)/>
 
-	<cffunction name="setup" access="public" output="false" returntype="void">
+	<cffunction name="setUp" access="public" output="false" returntype="void">
 		<cfscript>
-			variables.cfEvernote = new CFEvernote().Init("CDA321","bittersweetdev","sandbox.evernote.com");
+			variables.cfEvernote = createObject("component","CFEvernote").Init(variables.configArray[1],variables.configArray[2],"sandbox.evernote.com","http://localhost/cfevernote/callback.cfm");
 		</cfscript>		
-	</cffunction>
-	
-	<cffunction name="testInitSettingKeyandAccountReturnsExpectedResult" returntype="void" access="public" output="false" >
-		<cfscript>
-			expected = "CDA321";
-			actual = variables.cfEvernote.getApiKey();
-			
-			assertEquals(expected, actual);
-			
-			expected = "bittersweetdev";
-			actual = variables.cfEvernote.getApiAccount();
-					
-			assertEquals(expected,actual);
-		</cfscript>
 	</cffunction>
 	
 	<cffunction name="testSettingAPIKeyReturnsCorrectAPIKey" returntype="void" access="public" output="false">
@@ -68,11 +54,18 @@
 		</cfscript>
 	</cffunction>
 	
+	<cffunction name="testGetOAuthURL" returntype="void" access="public" output="false" hint="test oauthurl" >
+		<cfscript>
+			expected = "https://sandbox.evernote.com/oauth";
+			
+			actual = variables.cfEvernote.getEvernoteOAuthURL();
+			
+			assertEquals(expected,actual);
+		</cfscript>
+	</cffunction>
+	
 	<cffunction name="testAuthenticate" returntype="void" access="public" output="false" hint="test authentication" >
 		<cfscript>
-			//not sure about the composition of this function, creating the tsclient in the function doesn't make it
-			//very testable
-			
 			variables.cfEvernote.Authenticate(variables.configArray[1],variables.configArray[2]);
 		</cfscript>
 	</cffunction>

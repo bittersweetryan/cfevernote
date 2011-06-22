@@ -22,33 +22,31 @@ THE SOFTWARE.
 <cfcomponent hint="Im a ColdFusion wrapper for the evernote API">
 	
 	<cfscript>
+		//api information
 		variables.apiKey = "";
 		variables.apiAccount = "";
-		
 		variables.evernoteHost = "";
 		variables.userStoreURL = "";
-		variables.noteStorURLBase = "";				
+		variables.userStorURLBase = "";
 		
+		//oauth information
+		variables.callbackURL = "";
+		variables.evernoteOAuthURL = "";				
+		variables.evernoteOAuthQueryLink = "/oauth";
+		
+		//api url information
 		variables.userStoreQueryLink = "/edam/user";
-		variables.noteStoreBaseQueryLink = "/edam/note/";
+		variables.userStoreBaseQueryLink = "/edam/note/";
 		
-		variables.userAgent = "CFEvernote (ColdFusion) " & variables.major & "." & variables.minor;
-		
-		variables.jarPath = [expandPath("\") & "lib" & application.seperator & "evernote-api-1.18.jar",
-							 expandPath("\") & "lib" & application.seperator & "libthrift.jar"];
-		variables.javaLoader = createObject("component","JavaLoader").init(jarPath);
-		
-		variables.userStore = variables.javaLoader.create("com.evernote.edam.userstore.UserStore").init();
-
-		writedump(var=variables.userStore,abort=true);
-
-		variables.noteStore = variables.javaLoader.create("com.evernote.edam.notestore.NoteStore");
+		variables.userAgent = "CFEvernote (ColdFusion) ";
 	</cfscript>
 
 	<cffunction name="init" returntype="CFEvernote" access="public" hint="Default constructor for the cfevernote plugin">
-		<cfargument name="apiAccount" type="string" required="false" default="" />	
+		<cfargument name="apiAccount" type="string" required="false" default="" />
 		<cfargument name="apiKey" type="string" required="false" default="" />
 		<cfargument name="evernoteHost" type="string" required="false" default="" />
+		<cfargument name="callbackURL" type="string" required="false" default="" />
+		
 		<cfscript>
 			if(arguments.apiKey neq "")
 				variables.apiKey = arguments.apiKey;
@@ -61,7 +59,12 @@ THE SOFTWARE.
 				
 				variables.userStoreURL = "https://" & arguments.evernoteHost &  variables.userStoreQueryLink;
 				variables.userStoreURLBase = "https://" & arguments.evernoteHost & variables.userStoreBaseQueryLink;
+				
+				variables.evernoteOAuthURL = "https://" & arguments.evernoteHost & variables.evernoteOAuthQueryLink;
 			}
+			
+			if(arguments.callbackURL neq "")
+				variables.callbackURL = arguments.callbackURL;
 							
 			return this;
 		</cfscript>
@@ -71,18 +74,21 @@ THE SOFTWARE.
 	*   	     Action Methods                  *
 	--------------------------------------------->
 	<cffunction name="authenticate" returntype="boolean" access="public" output="false" hint="I log  user into evernote using oauth">
-		<cfargument name="username" type="String" required="false" default="" hint="evernote username" />		
-		<cfargument name="password" type="String" required="false" default="" hint="evernote password" />
 		<cfscript>
-			
-			httpClient = javaLoader.create("org.apache.thrift.transport.THttpClient").init(variables.userStoreURL);
-			httpClient.setCustomHeader("User-Agent",variables.userAgent);
-			
-			userStoreProtocol = javaLoader.create("org.apache.thrift.protocol.TBinaryProtocol").init(httpClient);
-			
+			getTemporaryAuthTolken();
 			return true;
 		</cfscript>
 	</cffunction>	
+	
+	<cffunction name="getTemporaryAuthTolken" returntype="String" access="private" output="false" hint="I get a temporary access tolken for o-auth" >
+		
+		<cfset oauth_nonce = hash(createUUID(),"md5") />
+
+		<cfhttp url="#variables.evernoteOAuthURL#?oauth_consumer_key=#variables.apiAccount#&oauth_signature=#variables.apiKey#&oauth_signature_method=PLAINTEXT&
+					oauth_timestamp=#getTickCount()#&oauth_callback=#URLEncodedFormat(variables.callbackURL)#&oauth_nonce=#oauth_nonce#" result="oauthResult" />
+		
+		<cfdump var="#oauthResult#" abort="true">					
+	</cffunction>
 	
 	<!--------------------------------------------
 	*   	     Mutaters and Accessors          *
@@ -122,6 +128,12 @@ THE SOFTWARE.
 	<cffunction name="getUserStoreURLBase" returntype="String" access="public" output="false">
 		<cfscript>
 			return variables.userStoreURLBase;
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="getEvernoteOAuthURL" returntype="String" access="public" output="true" hint="returns the oauth url link" >
+		<cfscript>
+			return variables.evernoteOAuthURL;
 		</cfscript>
 	</cffunction>
 </cfcomponent>

@@ -75,6 +75,7 @@ public class CFEvernoteTest {
     @Test
     public void testAuthenticateShouldReturnTrueForProperCredentials(){
         boolean expected = true;
+        
         boolean actual = this.instance.Authenticate(username, password);
         
         assertEquals(expected, actual);
