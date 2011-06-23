@@ -33,10 +33,14 @@ THE SOFTWARE.
 		variables.callbackURL = "";
 		variables.evernoteOAuthURL = "";				
 		variables.evernoteOAuthQueryLink = "/oauth";
+		variables.temporaryAuthTolken = ""; 
+		variables.authTolken = "";
 		
 		//api url information
 		variables.userStoreQueryLink = "/edam/user";
 		variables.userStoreBaseQueryLink = "/edam/note/";
+		
+		
 		
 		variables.userAgent = "CFEvernote (ColdFusion) ";
 	</cfscript>
@@ -75,24 +79,30 @@ THE SOFTWARE.
 	--------------------------------------------->
 	<cffunction name="authenticate" returntype="boolean" access="public" output="false" hint="I log  user into evernote using oauth">
 		<cfscript>
-			getTemporaryAuthTolken();
+			var temporaryAuthTolken = getTemporaryAuthTolkenFromEvernote();
 			
-			return true;
+			if(temporaryAuthTolken eq ""){
+				return false;
+			}
+			else{
+				variables.temporaryAuthTolken = temporaryAuthTolken;
+				return true;
+			}
 		</cfscript>
 	</cffunction>	
 	
-	<cffunction name="getTemporaryAuthTolken" returntype="String" access="private" output="false" hint="I get a temporary access tolken for o-auth" >
+	<cffunction name="getTemporaryAuthTolkenFromEvernote" returntype="String" access="private" output="false" hint="I get a temporary access tolken for o-auth" >
 		<!-- maybe refactor building url out to new method -->
 		<cfhttp url="#variables.evernoteOAuthURL#?oauth_consumer_key=#variables.apiAccount#&oauth_signature=#variables.apiKey#&oauth_signature_method=PLAINTEXT&
-					oauth_timestamp=#getTickCount()#&oauth_callback=#URLEncodedFormat(variables.callbackURL)#&oauth_nonce=#hash(createUUID(),'md5')#" result="oauthResult" />		
+					oauth_timestamp=#getTickCount()#&oauth_callback=#URLEncodedFormat(variables.callbackURL)#&oauth_nonce=#hash(createUUID(),'md5')#" result="oauthResult" />
 					
 		<cfscript>
-			if(oauthResult.responseHeader.status_code neq 200){
+			if(oauthResult.Responseheader.Status_Code neq "200"){
 				return "";
 			}
 			else
 			{
-				parseOauthTempTokenResponse(oauth.fileContent);
+				return parseOauthTempTokenResponse(oauthResult.fileContent);
 			}
 		</cfscript>
 	</cffunction>
@@ -147,9 +157,28 @@ THE SOFTWARE.
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="getEvernoteOAuthURL" returntype="String" access="public" output="true" hint="returns the oauth url link" >
+	<cffunction name="getEvernoteOAuthURL" returntype="String" access="public" output="false" hint="returns the oauth url link" >
 		<cfscript>
 			return variables.evernoteOAuthURL;
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="getTemporaryAuthTolken" returntype="String" access="public" output="false" hint="return the temporary oauth tolken used when getting the oauth tolken" >
+		<cfscript>
+			return variables.temporaryAuthTolken;
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="getAuthTolken" returntype="String" access="public" output="false" hint="I return the auth tolken" >
+		<cfscript>
+			return variables.authTolken;		
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="setAuthTolken" returntype="String" access="public" output="false" hint="I set the auth tolken" >
+		<cfargument name="authTolken" type="String" required="false" default=""/>
+		<cfscript>
+			variables.authTolken = arguments.authTolken;		
 		</cfscript>
 	</cffunction>
 </cfcomponent>

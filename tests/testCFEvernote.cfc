@@ -43,7 +43,6 @@
 			assertEquals(expected,actual);
 		</cfscript>
 	</cffunction>
-	
 	<cffunction name="testGetUserStoreURLBase" returntype="void" access="public" output="false">
 		<cfscript>
 			expected = "https://sandbox.evernote.com/edam/note/";
@@ -53,7 +52,6 @@
 			assertEquals(expected,actual);
 		</cfscript>
 	</cffunction>
-	
 	<cffunction name="testGetOAuthURL" returntype="void" access="public" output="false" hint="test oauthurl" >
 		<cfscript>
 			expected = "https://sandbox.evernote.com/oauth";
@@ -66,7 +64,14 @@
 	
 	<cffunction name="testAuthenticate" returntype="void" access="public" output="false" hint="test authentication" >
 		<cfscript>
-			//variables.cfEvernote.Authenticate(variables.configArray[1],variables.configArray[2]);
+			var response = variables.cfEvernote.Authenticate(variables.configArray[1],variables.configArray[2]);
+			
+			if(!response)
+				fail("Auth returned false!");
+			else if(variables.cfEvernote.getTemporaryAuthTolken() eq "")
+				fail("Auth returned empty temporary tolken");
+			else
+				writedump(var=response,output="console");
 		</cfscript>
 	</cffunction>
 	
@@ -80,5 +85,16 @@
 			assertEquals(expected,actual);
 		</cfscript>		
 	</cffunction>	
-
+	
+	<cffunction name="testSetGetAuthTolken" returntype="void" access="public" output="false" hint="" >
+		<cfscript>
+			var expected = "abc123";
+			
+			variables.cfEvernote.setAuthTolken("abc123");
+			
+			var actual = variables.cfEvernote.getAuthTolken();
+			
+			assertEquals(expected,actual);
+		</cfscript>
+	</cffunction>
 </cfcomponent>

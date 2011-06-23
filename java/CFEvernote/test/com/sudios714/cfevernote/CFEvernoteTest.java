@@ -24,21 +24,11 @@ public class CFEvernoteTest {
     
     @Before
     public void setUp() {
-        this.getCredentialsFromFile("D:\\inetpub\\wwwroot\\cfevernote\\config.txt");
         this.instance = new CFEvernote(this.apiAccount,this.apiKey,"sandbox.evernote.com");
     }
     
     @After
     public void tearDown() {
-    }
-    
-    @Test
-    public void testGetApiAccount() {
-        String expResult = "bittersweetryan";
-        
-        String result = instance.getApiAccount();
-        
-        assertEquals(expResult, result);
     }
 
     @Test
@@ -70,15 +60,6 @@ public class CFEvernoteTest {
         String actual = this.instance.getNoteStoreURLBase();
         
         assertEquals(expected,actual);
-    }
-    
-    @Test
-    public void testAuthenticateShouldReturnTrueForProperCredentials(){
-        boolean expected = true;
-        
-        boolean actual = this.instance.Authenticate(username, password);
-        
-        assertEquals(expected, actual);
     }
     
     private void getCredentialsFromFile(String filename){
