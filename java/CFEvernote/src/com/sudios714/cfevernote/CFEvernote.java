@@ -66,6 +66,11 @@ public class CFEvernote {
         this.hostName = hostName;
         this.userAgent = userAgent;
         this.authToken = authTolken;
+        
+        this.userStoreURL = "https://".concat(hostName).concat(this.userStoreQueryParam);
+        this.noteStoreURLBase = "https://".concat(hostName).concat(this.noteStoreBaseQueryParam) ;
+        
+        this.userAgent = userAgent;
     }
     
     /************************************************
@@ -161,5 +166,19 @@ public class CFEvernote {
      */
     public void setAuthToken(String authToken) {
         this.authToken = authToken;
+    }
+
+    /**
+     * @return the userAgent
+     */
+    public String getUserAgent() {
+        return userAgent;
+    }
+
+    /**
+     * @param userAgent the userAgent to set
+     */
+    public void setUserAgent(String userAgent) {
+        this.userAgent = userAgent;
     }
 }

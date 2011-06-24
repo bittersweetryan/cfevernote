@@ -9,7 +9,7 @@
 <cfscript>
 	testResults = results.getResultsOutput('html');
 	
-	testResults = replace(testResults, "mxunit","cfevernote\\mxunit","ALL");
+	testResults = replace(testResults, "mxunit","cfevernote/mxunit","ALL");
 </cfscript>
 
 <cfoutput>  

@@ -31,15 +31,16 @@ THE SOFTWARE.
 		
 		//oauth information
 		variables.callbackURL = "";
-		variables.evernoteOAuthURL = "";				
+		variables.evernoteOAuthURL = "";		
+		variables.evernoteOAuthVerifyURL = "";				
 		variables.evernoteOAuthQueryLink = "/oauth";
+		variables.evernoteOAuthVerifyQueryLink = "/OAuth.action?oauth_token=";
 		variables.temporaryAuthTolken = ""; 
 		variables.authTolken = "";
 		
 		//api url information
 		variables.userStoreQueryLink = "/edam/user";
 		variables.userStoreBaseQueryLink = "/edam/note/";
-		
 		
 		
 		variables.userAgent = "CFEvernote (ColdFusion) ";
@@ -59,7 +60,7 @@ THE SOFTWARE.
 				variables.apiAccount = arguments.apiAccount;
 			
 			if(arguments.evernoteHost neq ""){
-				variables.evenoteHost = arguments.evernoteHost;
+				variables.evernoteHost = arguments.evernoteHost;
 				
 				variables.userStoreURL = "https://" & arguments.evernoteHost &  variables.userStoreQueryLink;
 				variables.userStoreURLBase = "https://" & arguments.evernoteHost & variables.userStoreBaseQueryLink;
@@ -86,6 +87,7 @@ THE SOFTWARE.
 			}
 			else{
 				variables.temporaryAuthTolken = temporaryAuthTolken;
+				variables.evernoteOAuthVerifyURL = "https://" & variables.evernoteHost & variables.evernoteOAuthVerifyQueryLink & temporaryAuthTolken;
 				return true;
 			}
 		</cfscript>
@@ -179,6 +181,12 @@ THE SOFTWARE.
 		<cfargument name="authTolken" type="String" required="false" default=""/>
 		<cfscript>
 			variables.authTolken = arguments.authTolken;		
+		</cfscript>
+	</cffunction>
+
+	<cffunction name="getEvernoteOAuthVerifyURL" access="public" output="false" returntype="any">
+		<cfscript>
+			return variables.evernoteOAuthVerifyURL;
 		</cfscript>
 	</cffunction>
 </cfcomponent>

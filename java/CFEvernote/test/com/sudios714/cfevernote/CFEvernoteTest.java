@@ -14,30 +14,18 @@ public class CFEvernoteTest {
     
     CFEvernote instance;
     
-    String username;
-    String password;
-    String apiKey;
-    String apiAccount;
-    
     public CFEvernoteTest() {
     }
     
     @Before
     public void setUp() {
-        this.instance = new CFEvernote(this.apiAccount,this.apiKey,"sandbox.evernote.com");
+        this.instance = new CFEvernote("bittersweetryan.130C21A0AF2.687474703A2F2F6C6F63616C686F73742F746573742E63666D.C4470DF4C5AFE9A4948D0FA97B281F7C","sandbox.evernote.com","CFEvernote Test 1.0");
     }
     
     @After
     public void tearDown() {
     }
 
-    @Test
-    public void testGetHostName() {
-        String expResult = "sandbox.evernote.com";
-        
-        String result = instance.getHostName();
-        assertEquals(expResult, result);
-    }
     
     @Test
     public void testGetVersionNumber(){
@@ -55,6 +43,7 @@ public class CFEvernoteTest {
         assertEquals(expected,actual);
     }
     
+    @Test
     public void testGetNoteStoreURLBase(){
         String expected = "https://sandbox.evernote.com/edam/note/";
         String actual = this.instance.getNoteStoreURLBase();
@@ -62,35 +51,16 @@ public class CFEvernoteTest {
         assertEquals(expected,actual);
     }
     
-    private void getCredentialsFromFile(String filename){
-    
-        BufferedReader input = null;
-
-         try{
-            input = new BufferedReader(new FileReader(filename));
-        }
-        catch(java.io.FileNotFoundException ex){
-            fail("File not found");
-        }
+    @Test
+    public void testGetUserAgent(){
+        String expected = "CFEvernote Test 1.0";
+        String actual = this.instance.getUserAgent();
         
-        //this seems like a lot of work for a test but since its OSS I want to hide my credentials
-        try{
-            String credentials = input.readLine();
-            
-            String[] credentialArray = credentials.split(",");
-            
-            if(credentialArray.length != 4){
-                fail("Credential input failure.");
-            }
-            else{
-                this.username = credentialArray[0];
-                this.password = credentialArray[1];
-                this.apiAccount = credentialArray[2];
-                this.apiKey = credentialArray[3];
-            }
-        }
-        catch(java.io.IOException ex){
-            fail("IO exception");
-        }
+        assertEquals(expected,actual);
+    }
+   
+    @Test
+    public void testGetNoteList(){
+        this.instance.listNotes();
     }
 }
