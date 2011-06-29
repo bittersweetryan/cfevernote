@@ -19,7 +19,7 @@ public class CFEvernoteTest {
     
     @Before
     public void setUp() {
-        this.instance = new CFEvernote("bittersweetryan.130C21A0AF2.687474703A2F2F6C6F63616C686F73742F746573742E63666D.C4470DF4C5AFE9A4948D0FA97B281F7C","sandbox.evernote.com","CFEvernote Test 1.0");
+        this.instance = new CFEvernote("http://localhost/cfevernote/callback.cfm?oauth_token=bittersweetryan.130D822743E.687474703A2F2F6C6F63616C686F73742F6366657665726E6F74652F63616C6C6261636B2E63666D.1FE8AD138206A7245B35E2E4EDFD9DB5&oauth_verifier=8390414E4887606C09010BBC64361F72","sandbox.evernote.com","CFEvernote Test 1.0");
     }
     
     @After

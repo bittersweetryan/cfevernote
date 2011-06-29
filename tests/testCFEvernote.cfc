@@ -68,8 +68,8 @@
 			
 			if(!response)
 				fail("Auth returned false!");
-			else if(variables.cfEvernote.getTemporaryAuthTolken() eq "")
-				fail("Auth returned empty temporary tolken");
+			else if(variables.cfEvernote.getTemporaryAuthToken() eq "")
+				fail("Auth returned empty temporary Token");
 			else
 				writedump(var=response,output="console");
 		</cfscript>
@@ -86,15 +86,27 @@
 		</cfscript>		
 	</cffunction>	
 	
-	<cffunction name="testSetGetAuthTolken" returntype="void" access="public" output="false" hint="" >
+	<cffunction name="testSetGetAuthToken" returntype="void" access="public" output="false" hint="" >
 		<cfscript>
 			var expected = "abc123";
 			
-			variables.cfEvernote.setAuthTolken("abc123");
+			variables.cfEvernote.setAuthToken("abc123");
 			
-			var actual = variables.cfEvernote.getAuthTolken();
+			var actual = variables.cfEvernote.getAuthToken();
 			
 			assertEquals(expected,actual);
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testGetOAuthCredentials"  returntype="void" access="public" output="false" hint="" >
+		<cfscript>
+			fail("no test written yet");
+			/*
+			var expected = "";
+			var actual = "";
+			
+			assertEquals(expected,actual);
+			*/
 		</cfscript>
 	</cffunction>
 </cfcomponent>

@@ -28,14 +28,19 @@ import org.apache.thrift.transport.THttpClient;
 import org.apache.thrift.transport.TTransportException;
 
 public class CFEvernote {
+   
+    private static final short VERSION_MAJOR = 0;
+    private static final short VERSION_MINOR = 1;
     
     private String hostName;
     private String userStoreURL;
     private String noteStoreURLBase;
-    private String apiKey;
-    private String apiAccount;
+    private String noteStoreURL;
     private String userAgent;
+    
     private String authToken;
+    private String shard;
+    private String userID;
     
     private String userStoreQueryParam = "/edam/user";
     private String noteStoreBaseQueryParam = "/edam/note/";
@@ -62,10 +67,12 @@ public class CFEvernote {
         this.userAgent = "Java";
     }
     
-    public CFEvernote(String authTolken, String hostName, String userAgent){
+    public CFEvernote(String authTolken, String shard, String userID, String hostName, String userAgent){
         this.hostName = hostName;
         this.userAgent = userAgent;
         this.authToken = authTolken;
+        this.shard = shard;
+        this.userID = userID;
         
         this.userStoreURL = "https://".concat(hostName).concat(this.userStoreQueryParam);
         this.noteStoreURLBase = "https://".concat(hostName).concat(this.noteStoreBaseQueryParam) ;
@@ -76,7 +83,29 @@ public class CFEvernote {
     /************************************************
      *                methods                       *
      ***********************************************/
-    
+    private boolean intitialize(String username, String password) throws Exception {
+
+        // Check that we can talk to the server
+        boolean versionOk = userStore.checkVersion(this.userAgent, VERSION_MAJOR, VERSION_MINOR);
+        
+        if (!versionOk) {
+          System.err.println("Incomatible EDAM client protocol version");
+          return false;
+        }
+
+        // Set up the NoteStore client 
+        String noteStoreUrl = this.noteStoreURLBase + this.shard;
+        
+        THttpClient noteStoreTrans = new THttpClient(noteStoreUrl);
+        noteStoreTrans.setCustomHeader("User-Agent", this.userAgent);
+        
+        TBinaryProtocol noteStoreProt = new TBinaryProtocol(noteStoreTrans);
+        
+        this.noteStore = new NoteStore.Client(noteStoreProt, noteStoreProt);
+
+        return true;
+      }
+      
     public void listNotes(){
         try{
             this.noteStore.listNotebooks(this.authToken);
@@ -95,35 +124,6 @@ public class CFEvernote {
     /************************************************
      *           mutators and accessors             *
      ***********************************************/
-    
-    /**
-     * @return the apiKey
-     */
-    public String getApiKey() {
-        return apiKey;
-    }
-
-    /**
-     * @param apiKey the apiKey to set
-     */
-    public void setApiKey(String apiKey) {
-        this.apiKey = apiKey;
-    }
-
-    /**
-     * @return the apiAccount
-     */
-    public String getApiAccount() {
-        return apiAccount;
-    }
-
-    /**
-     * @param apiAccount the apiAccount to set
-     */
-    public void setApiAccount(String apiAccount) {
-        this.apiAccount = apiAccount;
-    }
-
     /**
      * @return the hostName
      */

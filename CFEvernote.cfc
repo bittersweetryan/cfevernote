@@ -35,8 +35,13 @@ THE SOFTWARE.
 		variables.evernoteOAuthVerifyURL = "";				
 		variables.evernoteOAuthQueryLink = "/oauth";
 		variables.evernoteOAuthVerifyQueryLink = "/OAuth.action?oauth_token=";
-		variables.temporaryAuthTolken = ""; 
-		variables.authTolken = "";
+		variables.temporaryAuthToken = ""; 
+		variables.authToken = "";
+		variables.authVerifier = "";
+		
+		//evernote user information
+		variables.shard = "";
+		variables.userID = "";
 		
 		//api url information
 		variables.userStoreQueryLink = "/edam/user";
@@ -80,20 +85,20 @@ THE SOFTWARE.
 	--------------------------------------------->
 	<cffunction name="authenticate" returntype="boolean" access="public" output="false" hint="I log  user into evernote using oauth">
 		<cfscript>
-			var temporaryAuthTolken = getTemporaryAuthTolkenFromEvernote();
+			var temporaryAuthToken = getTemporaryAuthTokenFromEvernote();
 			
-			if(temporaryAuthTolken eq ""){
+			if(temporaryAuthToken eq ""){
 				return false;
 			}
 			else{
-				variables.temporaryAuthTolken = temporaryAuthTolken;
-				variables.evernoteOAuthVerifyURL = "https://" & variables.evernoteHost & variables.evernoteOAuthVerifyQueryLink & temporaryAuthTolken;
+				variables.temporaryAuthToken = temporaryAuthToken;
+				variables.evernoteOAuthVerifyURL = "https://" & variables.evernoteHost & variables.evernoteOAuthVerifyQueryLink & temporaryAuthToken;
 				return true;
 			}
 		</cfscript>
 	</cffunction>	
 	
-	<cffunction name="getTemporaryAuthTolkenFromEvernote" returntype="String" access="private" output="false" hint="I get a temporary access tolken for o-auth" >
+	<cffunction name="getTemporaryAuthTokenFromEvernote" returntype="String" access="private" output="false" hint="I get a temporary access Token for o-auth" >
 		<!-- maybe refactor building url out to new method -->
 		<cfhttp url="#variables.evernoteOAuthURL#?oauth_consumer_key=#variables.apiAccount#&oauth_signature=#variables.apiKey#&oauth_signature_method=PLAINTEXT&
 					oauth_timestamp=#getTickCount()#&oauth_callback=#URLEncodedFormat(variables.callbackURL)#&oauth_nonce=#hash(createUUID(),'md5')#" result="oauthResult" />
@@ -109,7 +114,57 @@ THE SOFTWARE.
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="parseOauthTempTokenResponse" returntype="String" access="private" output="false" hint="I take the response from the oauth temp responsoe and parse out the tolken" >
+	<cffunction name="getTokenCredentials" returntype="void" access="public" output="false" hint="I take a authorized token response form evernote and get user credentials from evernote" >
+		<cfargument name="authToken" type="String" required="false" default="" displayname="" hint="" />
+		<cfargument name="authVerifier" type="String" required="false" default="" displayname="" hint="oauth verification Token" />
+		
+		<cfscript>
+			//TODO: clean this up, getting argument errors if a local var shares same name as a argument
+			var _authToken = "";
+			var _authVerifier = "";
+			var response = "";
+			
+			if(arguments.authToken neq "")
+				_authToken = arguments.authToken;
+			else if(variables.authToken neq "")
+				_authToken = variables.authToken;
+			
+				
+			if(arguments.authVerifier neq "")
+				_authVerifier = arguments.authVerifier;
+			else if(variables.authVerifier neq "")
+				_authVerifier = variables.authVerifier;
+				
+			if(_authToken neq "" && _authVerifier neq ""){
+				response = getCredentialsRequest(_authToken,_authVerifier);
+			}
+			
+			if(NOT response){
+				//do something to handle errors
+			}
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="getCredentialsRequest" returntype="Boolean" access="private" output="true" hint="I call the evernote API to get credentials (oauth step 3) and return the result" >
+		<cfargument name="authToken" type="String" required="false" default="" displayname="" hint="oauth authorization Token" />
+		<cfargument name="authVerifier" type="String" required="false" default="" displayname="" hint="oauth verification Token" />
+				
+		<cfhttp url="#variables.evernoteOAuthURL#?oauth_consumer_key=#variables.apiAccount#&oauth_signature=#variables.apiKey#&oauth_signature_method=PLAINTEXT&oauth_timestamp=#getTickCount()#&oauth_nonce=#hash(createUUID(),'md5')#&oauth_token=#arguments.authToken#&oauth_verifier=#arguments.authVerifier#" result="oauthResult" />
+		
+		<cfscript>
+		if(oauthResult.Responseheader.Status_Code neq "200"){
+				return false;
+			}
+			else
+			{
+				variables.shard = parseOauthShardResponse(oauthResult.fileContent);
+				variables.userID = parseOauthUserIDResponse(oauthResult.fileContent);
+				return true;
+			}	
+		</cfscript>		
+	</cffunction>
+	
+	<cffunction name="parseOauthTempTokenResponse" returntype="String" access="private" output="false" hint="I take the response from the oauth temp responsoe and parse out the Token" >
 		<cfargument name="oauthResponse" type="String" required="true" default="" hint="resonse from oauth" />
 		<cfscript>
 			var regexval = refindnocase('\oauth_token=(.*?)\&',arguments.oauthResponse,0,true);
@@ -118,6 +173,23 @@ THE SOFTWARE.
 		</cfscript>
 	</cffunction>
 	
+	<cffunction name="parseOauthShardResponse" returntype="String" access="private" output="false" hint="I take the response from the oauth temp responsoe and parse out the Token" >
+		<cfargument name="oauthResponse" type="String" required="true" default="" hint="resonse from oauth" />
+		<cfscript>
+			var regexval = refindnocase('edam_shard=(.*?)\&',arguments.oauthResponse,0,true);
+
+			return mid(arguments.oauthResponse,regexval["pos"][2],regexval["len"][2]);
+		</cfscript>
+	</cffunction>
+
+	<cffunction name="parseOauthUserIDResponse" returntype="String" access="private" output="false" hint="I take the response from the oauth temp responsoe and parse out the Token" >
+		<cfargument name="oauthResponse" type="String" required="true" default="" hint="resonse from oauth" />
+		<cfscript>
+			var regexval = refindnocase('edam_userId=(\d*)',arguments.oauthResponse,0,true);
+			
+			return mid(arguments.oauthResponse,regexval["pos"][2],regexval["len"][2]);
+		</cfscript>
+	</cffunction>
 	<!--------------------------------------------
 	*   	     Mutaters and Accessors          *
 	--------------------------------------------->
@@ -165,25 +237,50 @@ THE SOFTWARE.
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="getTemporaryAuthTolken" returntype="String" access="public" output="false" hint="return the temporary oauth tolken used when getting the oauth tolken" >
+	<cffunction name="getTemporaryAuthToken" returntype="String" access="public" output="false" hint="return the temporary oauth Token used when getting the oauth Token" >
 		<cfscript>
-			return variables.temporaryAuthTolken;
+			return variables.temporaryAuthToken;
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="getAuthTolken" returntype="String" access="public" output="false" hint="I return the auth tolken" >
+	<cffunction name="getAuthToken" returntype="String" access="public" output="false" hint="I return the auth Token" >
 		<cfscript>
-			return variables.authTolken;		
+			return variables.authToken;		
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="setAuthTolken" returntype="String" access="public" output="false" hint="I set the auth tolken" >
-		<cfargument name="authTolken" type="String" required="false" default=""/>
+	<cffunction name="setAuthToken" returntype="String" access="public" output="false" hint="I set the auth Token" >
+		<cfargument name="authToken" type="String" required="false" default=""/>
 		<cfscript>
-			variables.authTolken = arguments.authTolken;		
+			variables.authToken = arguments.authToken;		
 		</cfscript>
 	</cffunction>
 
+	<cffunction name="getShard" returntype="String" access="public" output="false" hint="I return the shard after oauth credentials" >
+		<cfscript>
+			return variables.shard;		
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="getUserID" returntype="String" access="public" output="false" hint="I return the users id after oauth credentials" >
+		<cfscript>
+			return variables.userID;
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="getAuthVerifier" returntype="String" access="public" output="false" hint="I return the auth Token" >
+		<cfscript>
+			return variables.authVerifier;		
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="setAuthVerifier" returntype="String" access="public" output="false" hint="I set the auth Token" >
+		<cfargument name="authVerifier" type="String" required="false" default=""/>
+		<cfscript>
+			variables.authVerifier = arguments.authVerifier;		
+		</cfscript>
+	</cffunction>
+	
 	<cffunction name="getEvernoteOAuthVerifyURL" access="public" output="false" returntype="any">
 		<cfscript>
 			return variables.evernoteOAuthVerifyURL;

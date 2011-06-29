@@ -6,6 +6,7 @@
 		this.seperator = createObject("java","java.lang.System").getProperty("file.separator");
 		this.mappings["/"] = expandpath(".") & this.seperator;
 		
+		this.sessionManagement = true;
 	</cfscript>
 	
 	<cffunction name="OnApplicationStart" access="public" returntype="boolean" output="false">
