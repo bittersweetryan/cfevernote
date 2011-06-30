@@ -19,7 +19,13 @@ public class CFEvernoteTest {
     
     @Before
     public void setUp() {
-        this.instance = new CFEvernote("http://localhost/cfevernote/callback.cfm?oauth_token=bittersweetryan.130D822743E.687474703A2F2F6C6F63616C686F73742F6366657665726E6F74652F63616C6C6261636B2E63666D.1FE8AD138206A7245B35E2E4EDFD9DB5&oauth_verifier=8390414E4887606C09010BBC64361F72","s1","161","sandbox.evernote.com","CFEvernote Test 1.0");
+
+        try{
+            this.instance = new CFEvernote("bittersweetryan.130E0A12D19.687474703A2F2F6C6F63616C686F73742F6366657665726E6F74652F63616C6C6261636B2E63666D.DA71E8C8608219D47C019820A88621FD","s1","56812","sandbox.evernote.com","CFEvernote Test 1.0");
+        }
+        catch(Exception ex){
+            fail("Error on init");
+        }
     }
     
     @After
@@ -59,9 +65,9 @@ public class CFEvernoteTest {
         assertEquals(expected,actual);
     }
    
-    //@Test
-    public void testGetNoteList(){
-        this.instance.listNotes();
+    @Test
+    public void testGetNotebookListWithoutPassingInMaxNumber(){
+        this.instance.listNotebooks();
     }
     
     @Test

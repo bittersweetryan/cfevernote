@@ -20,6 +20,8 @@ import com.evernote.edam.userstore.*;
 import com.evernote.edam.error.*;
 import com.evernote.edam.userstore.Constants;
 import com.evernote.edam.type.*;
+import java.util.ArrayList;
+import java.util.List;
 
 //imprt thrift
 import org.apache.thrift.TException;
@@ -67,7 +69,7 @@ public class CFEvernote {
         this.userAgent = "Java";
     }
     
-    public CFEvernote(String authTolken, String shard, String userID, String hostName, String userAgent){
+    public CFEvernote(String authTolken, String shard, String userID, String hostName, String userAgent) throws Exception{
         this.hostName = hostName;
         this.userAgent = userAgent;
         this.authToken = authTolken;
@@ -78,18 +80,28 @@ public class CFEvernote {
         this.noteStoreURLBase = "https://".concat(hostName).concat(this.noteStoreBaseQueryParam) ;
         
         this.userAgent = userAgent;
+        
+        this.intitialize();
     }
     
     /************************************************
      *                methods                       *
      ***********************************************/
-    private boolean intitialize(String username, String password) throws Exception {
+    private boolean intitialize() throws Exception {
+        
+        //setup the userstore
+        THttpClient userStoreTrans = new THttpClient(this.userStoreURL);
+        
+        userStoreTrans.setCustomHeader("User-Agent", this.userAgent);
+        
+        TBinaryProtocol userStoreProt = new TBinaryProtocol(userStoreTrans);
+        
+        userStore = new UserStore.Client(userStoreProt, userStoreProt);
 
         // Check that we can talk to the server
         boolean versionOk = userStore.checkVersion(this.userAgent, VERSION_MAJOR, VERSION_MINOR);
         
         if (!versionOk) {
-          System.err.println("Incomatible EDAM client protocol version");
           return false;
         }
 
@@ -104,22 +116,37 @@ public class CFEvernote {
         this.noteStore = new NoteStore.Client(noteStoreProt, noteStoreProt);
 
         return true;
-      }
-      
-    public void listNotes(){
-        try{
-            this.noteStore.listNotebooks(this.authToken);
-        }
-        catch(com.evernote.edam.error.EDAMUserException ex){
-        
-        }
-        catch(com.evernote.edam.error.EDAMSystemException ex){
-        
-        }
-        catch(org.apache.thrift.TException ex){
-            
-        }
     }
+    
+    /***
+     * Will return top 100 notes if no number of notes is passed in
+     */
+    public List listNotebooks(){
+        return this.listNotebooks(100);
+    }
+    
+    public List listNotebooks(int maxNotes){    
+
+        List<Notebook> notebooks;
+        
+        try{
+            // First, get a list of all notebooks
+            notebooks = noteStore.listNotebooks(authToken);
+            
+            if(notebooks.size() > maxNotes){
+                for(int i=maxNotes;i < notebooks.size(); i++){
+                    notebooks.remove(i);
+                }
+            }
+                
+        }
+        catch(Exception ex){
+            notebooks = new ArrayList();
+        }
+        
+        return notebooks;
+  }
+    
     
     /************************************************
      *           mutators and accessors             *
