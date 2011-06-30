@@ -14,7 +14,8 @@
 	
 	<cffunction name="testSettingAPIKeyReturnsCorrectAPIKey" returntype="void" access="public" output="false">
 		<cfscript>
-			expected = "ABC123";
+			var expected = "ABC123";
+			var actual = "";
 			
 			variables.cfEvernote.setAPIKey("ABC123");
 			actual = variables.cfEvernote.getAPIKey();
@@ -25,7 +26,8 @@
 	
 	<cffunction name="testSettingAPIAccountReturnsCorrectAPIAccount" returntype="void" access="public" output="false">
 		<cfscript>
-			expected = "bittersweetryan";
+			var expected = "bittersweetryan";
+			var actual = "";
 			
 			variables.cfEvernote.setAPIAccount("bittersweetryan");
 			actual = variables.cfEvernote.getAPIAccount();
@@ -36,27 +38,24 @@
 	
 	<cffunction name="testGetUserStoreURL" returntype="void" access="public" output="false">
 		<cfscript>
-			expected = "https://sandbox.evernote.com/edam/user";
-			
-			actual = variables.cfEvernote.getUserStoreURL();
+			var expected = "https://sandbox.evernote.com/edam/user";
+			var actual = variables.cfEvernote.getUserStoreURL();
 			
 			assertEquals(expected,actual);
 		</cfscript>
 	</cffunction>
 	<cffunction name="testGetUserStoreURLBase" returntype="void" access="public" output="false">
 		<cfscript>
-			expected = "https://sandbox.evernote.com/edam/note/";
-			
-			actual = variables.cfEvernote.getUserStoreURLBase();
+			var expected = "https://sandbox.evernote.com/edam/note/";
+			var actual = variables.cfEvernote.getUserStoreURLBase();
 			
 			assertEquals(expected,actual);
 		</cfscript>
 	</cffunction>
 	<cffunction name="testGetOAuthURL" returntype="void" access="public" output="false" hint="test oauthurl" >
 		<cfscript>
-			expected = "https://sandbox.evernote.com/oauth";
-			
-			actual = variables.cfEvernote.getEvernoteOAuthURL();
+			var expected = "https://sandbox.evernote.com/oauth";
+			var actual = variables.cfEvernote.getEvernoteOAuthURL();
 			
 			assertEquals(expected,actual);
 		</cfscript>
@@ -77,15 +76,102 @@
 	
 	<cffunction name="testParseOAuthResponseReturnsToken" returntype="void" access="public" output="false" hint="test oauth response" >
 		<cfscript>
+			var expected="testuser.130B763E6C0.687474703A2F2F6C6F63616C686F73742F6366657665726E6F74652F63616C6C6261636B2E63666D.BD5F4D71952B75C68799427C59754E72";
+			var actual = "";
+			
 			makePublic(variables.cfEvernote,"parseOauthTempTokenResponse");
 			
-			expected="testuser.130B763E6C0.687474703A2F2F6C6F63616C686F73742F6366657665726E6F74652F63616C6C6261636B2E63666D.BD5F4D71952B75C68799427C59754E72";
+			
 			actual=variables.cfEvernote.parseOauthTempTokenResponse("oauth_token=testuser.130B763E6C0.687474703A2F2F6C6F63616C686F73742F6366657665726E6F74652F63616C6C6261636B2E63666D.BD5F4D71952B75C68799427C59754E72&oauth_token_secret=&oauth_callback_confirmed=true");
 			
 			assertEquals(expected,actual);
 		</cfscript>		
 	</cffunction>	
 	
+	<cffunction name="testParseOAuthResponseReturnsEmptyStringWhenNotInResponse" returntype="void" access="public" output="false" hint="test oauth response" >
+		<cfscript>
+			var expected="";
+			var actual = "";
+			
+			makePublic(variables.cfEvernote,"parseOauthTempTokenResponse");
+			
+			
+			actual=variables.cfEvernote.parseOauthTempTokenResponse("oauth_token_secret=&oauth_callback_confirmed=true");
+			
+			assertEquals(expected,actual);
+		</cfscript>		
+	</cffunction>	
+	
+	<cffunction name="testParseOAuthResponseReturnsEmptyStringWhenNothingIsPassedIn" returntype="void" access="public" output="false" hint="test oauth response" >
+		<cfscript>
+			var expected="";
+			var actual = "";
+			
+			makePublic(variables.cfEvernote,"parseOauthTempTokenResponse");
+			
+			
+			actual=variables.cfEvernote.parseOauthTempTokenResponse("");
+			
+			assertEquals(expected,actual);
+		</cfscript>		
+	</cffunction>
+		
+	<cffunction name="testParseShardResponseReturnsToken" returntype="void" access="public" output="false" hint="test oauth response" >
+		<cfscript>
+			var response = "oauth_token=S%3Ds4%3AU%3Da1%3AE%3D12bfd68c6b6%3AC%3D12bf8426ab8%3AP%3D7%3AA%3Den_oauth_test%3AH%3D3df9cf6c0d7bc410824c80231e64dbe1&oauth_token_secret=&edam_shard=s4&edam_userId=161";
+			var expected="s4";
+			var actual = "";
+			
+			makePublic(variables.cfEvernote,"parseOauthShardResponse");
+
+			actual=variables.cfEvernote.parseOauthShardResponse(response);
+			
+			assertEquals(expected,actual);
+		</cfscript>		
+	</cffunction>	
+	
+	<cffunction name="testParseShardResponseReturnsEmptyStringWhenResponseDoesntHaveShard" returntype="void" access="public" output="false" hint="test oauth response" >
+		<cfscript>
+			var response = "oauth_token=S%3Ds4%3AU%3Da1%3AE%3D12bfd68c6b6%3AC%3D12bf8426ab8%3AP%3D7%3AA%3Den_oauth_test%3AH%3D3df9cf6c0d7bc410824c80231e64dbe1&oauth_token_secret=&edam_userId=161";
+			var expected="";
+			var actual = "";
+			
+			makePublic(variables.cfEvernote,"parseOauthShardResponse");
+
+			actual=variables.cfEvernote.parseOauthShardResponse(response);
+			
+			assertEquals(expected,actual);
+		</cfscript>		
+	</cffunction>	
+	
+	
+	<cffunction name="testParseUserIDResponseReturnsCorrectID" returntype="void" access="public" output="false" hint="test oauth response" >
+		<cfscript>
+			var response = "oauth_token=S%3Ds4%3AU%3Da1%3AE%3D12bfd68c6b6%3AC%3D12bf8426ab8%3AP%3D7%3AA%3Den_oauth_test%3AH%3D3df9cf6c0d7bc410824c80231e64dbe1&oauth_token_secret=&edam_shard=s4&edam_userId=161";
+			var expected="161";
+			var actual = "";
+			
+			makePublic(variables.cfEvernote,"parseOauthUserIDResponse");
+
+			actual=variables.cfEvernote.parseOauthUserIDResponse(response);
+			
+			assertEquals(expected,actual);
+		</cfscript>		
+	</cffunction>	
+	
+	<cffunction name="testParseUserIDResponseReturnsEmptyStringIfNotInResponse" returntype="void" access="public" output="false" hint="test oauth response" >
+		<cfscript>
+			var response = "oauth_token=S%3Ds4%3AU%3Da1%3AE%3D12bfd68c6b6%3AC%3D12bf8426ab8%3AP%3D7%3AA%3Den_oauth_test%3AH%3D3df9cf6c0d7bc410824c80231e64dbe1&oauth_token_secret=&edam_shard=s4&";
+			var expected="";
+			var actual = "";
+			
+			makePublic(variables.cfEvernote,"parseOauthUserIDResponse");
+
+			actual=variables.cfEvernote.parseOauthUserIDResponse(response);
+			
+			assertEquals(expected,actual);
+		</cfscript>		
+	</cffunction>	
 	<cffunction name="testSetGetAuthToken" returntype="void" access="public" output="false" hint="" >
 		<cfscript>
 			var expected = "abc123";

@@ -94,7 +94,7 @@ public class CFEvernote {
         }
 
         // Set up the NoteStore client 
-        String noteStoreUrl = this.noteStoreURLBase + this.shard;
+        String noteStoreUrl = this.noteStoreURLBase + this.getShard();
         
         THttpClient noteStoreTrans = new THttpClient(noteStoreUrl);
         noteStoreTrans.setCustomHeader("User-Agent", this.userAgent);
@@ -180,5 +180,33 @@ public class CFEvernote {
      */
     public void setUserAgent(String userAgent) {
         this.userAgent = userAgent;
+    }
+
+    /**
+     * @return the shard
+     */
+    public String getShard() {
+        return shard;
+    }
+
+    /**
+     * @param shard the shard to set
+     */
+    public void setShard(String shard) {
+        this.shard = shard;
+    }
+
+    /**
+     * @return the userID
+     */
+    public String getUserID() {
+        return userID;
+    }
+
+    /**
+     * @param userID the userID to set
+     */
+    public void setUserID(String userID) {
+        this.userID = userID;
     }
 }

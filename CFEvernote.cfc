@@ -164,12 +164,16 @@ THE SOFTWARE.
 		</cfscript>		
 	</cffunction>
 	
+	<!---TODO: these regex functions have a code smell, should have one regex function and pass in what we are looking for --->
 	<cffunction name="parseOauthTempTokenResponse" returntype="String" access="private" output="false" hint="I take the response from the oauth temp responsoe and parse out the Token" >
 		<cfargument name="oauthResponse" type="String" required="true" default="" hint="resonse from oauth" />
 		<cfscript>
 			var regexval = refindnocase('\oauth_token=(.*?)\&',arguments.oauthResponse,0,true);
 			
-			return mid(arguments.oauthResponse,regexval["pos"][2],regexval["len"][2]);
+			if(arrayLen(regexval["pos"]) eq 2 AND regexval["pos"][2] AND arrayLen(regexval["len"]) eq 2 AND  regexval["len"][2])
+				return mid(arguments.oauthResponse,regexval["pos"][2],regexval["len"][2]);
+			else
+				return "";
 		</cfscript>
 	</cffunction>
 	
@@ -177,8 +181,11 @@ THE SOFTWARE.
 		<cfargument name="oauthResponse" type="String" required="true" default="" hint="resonse from oauth" />
 		<cfscript>
 			var regexval = refindnocase('edam_shard=(.*?)\&',arguments.oauthResponse,0,true);
-
-			return mid(arguments.oauthResponse,regexval["pos"][2],regexval["len"][2]);
+			
+			if(arrayLen(regexval["pos"]) eq 2 AND regexval["pos"][2] AND arrayLen(regexval["len"]) eq 2 AND  regexval["len"][2])
+				return mid(arguments.oauthResponse,regexval["pos"][2],regexval["len"][2]);
+			else
+				return "";
 		</cfscript>
 	</cffunction>
 
@@ -187,7 +194,10 @@ THE SOFTWARE.
 		<cfscript>
 			var regexval = refindnocase('edam_userId=(\d*)',arguments.oauthResponse,0,true);
 			
-			return mid(arguments.oauthResponse,regexval["pos"][2],regexval["len"][2]);
+			if(arrayLen(regexval["pos"]) eq 2 AND regexval["pos"][2] AND arrayLen(regexval["len"]) eq 2 AND  regexval["len"][2])
+				return mid(arguments.oauthResponse,regexval["pos"][2],regexval["len"][2]);
+			else
+				return "";
 		</cfscript>
 	</cffunction>
 	<!--------------------------------------------
