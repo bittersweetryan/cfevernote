@@ -14,6 +14,13 @@ public class CFEvernoteTest {
     
     CFEvernote instance;
     
+    private static final String AUTH_TOKEN = "S=s1:U=ddec:E=130eaf46a27:C=130e5ce0e2b:P=7:A=bittersweetryan:H=37086d55175a538e34cb194af4c7ee27";
+    private static final String SHARD = "s1";
+    private static final String USER_ID = "56812";
+    private static final String EVERNOTE_URL = "sandbox.evernote.com";
+    private static final String USER_AGENT = "CFEvernote Test";
+    private static final String VERSION = "1.18";
+    
     public CFEvernoteTest() {
     }
     
@@ -21,7 +28,7 @@ public class CFEvernoteTest {
     public void setUp() {
 
         try{
-            this.instance = new CFEvernote("bittersweetryan.130E0A12D19.687474703A2F2F6C6F63616C686F73742F6366657665726E6F74652F63616C6C6261636B2E63666D.DA71E8C8608219D47C019820A88621FD","s1","56812","sandbox.evernote.com","CFEvernote Test 1.0");
+            this.instance = new CFEvernote(AUTH_TOKEN,SHARD,USER_ID,EVERNOTE_URL,USER_AGENT);
         }
         catch(Exception ex){
             fail("Error on init");
@@ -35,7 +42,7 @@ public class CFEvernoteTest {
     
     @Test
     public void testGetVersionNumber(){
-        String expected = "0.1";
+        String expected = VERSION;
         String actual = this.instance.getVersionNumber();
         
         assertEquals(expected, actual);
@@ -59,7 +66,7 @@ public class CFEvernoteTest {
     
     @Test
     public void testGetUserAgent(){
-        String expected = "CFEvernote Test 1.0";
+        String expected = USER_AGENT;
         String actual = this.instance.getUserAgent();
         
         assertEquals(expected,actual);
@@ -67,12 +74,13 @@ public class CFEvernoteTest {
    
     @Test
     public void testGetNotebookListWithoutPassingInMaxNumber(){
+        
         this.instance.listNotebooks();
     }
     
     @Test
     public void testGetShard(){
-        String expected = "s1";
+        String expected = SHARD;
         String actual = this.instance.getShard();
         
         assertEquals(expected,actual);
@@ -80,7 +88,7 @@ public class CFEvernoteTest {
     
     @Test
     public void testGetUserID(){
-        String expected = "161";
+        String expected = USER_ID;
         String actual = this.instance.getUserID();
         
         assertEquals(expected,actual);

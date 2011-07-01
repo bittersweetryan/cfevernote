@@ -36,22 +36,6 @@
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="testGetUserStoreURL" returntype="void" access="public" output="false">
-		<cfscript>
-			var expected = "https://sandbox.evernote.com/edam/user";
-			var actual = variables.cfEvernote.getUserStoreURL();
-			
-			assertEquals(expected,actual);
-		</cfscript>
-	</cffunction>
-	<cffunction name="testGetUserStoreURLBase" returntype="void" access="public" output="false">
-		<cfscript>
-			var expected = "https://sandbox.evernote.com/edam/note/";
-			var actual = variables.cfEvernote.getUserStoreURLBase();
-			
-			assertEquals(expected,actual);
-		</cfscript>
-	</cffunction>
 	<cffunction name="testGetOAuthURL" returntype="void" access="public" output="false" hint="test oauthurl" >
 		<cfscript>
 			var expected = "https://sandbox.evernote.com/oauth";
@@ -61,9 +45,9 @@
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="testAuthenticate" returntype="void" access="public" output="false" hint="test authentication" >
+	<cffunction name="testAuthenticateAPIUser" returntype="void" access="public" output="false" hint="test authentication" >
 		<cfscript>
-			var response = variables.cfEvernote.Authenticate(variables.configArray[1],variables.configArray[2]);
+			var response = variables.cfEvernote.authenticateAPIUser(variables.configArray[1],variables.configArray[2]);
 			
 			if(!response)
 				fail("Auth returned false!");
@@ -74,15 +58,29 @@
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="testParseOAuthResponseReturnsToken" returntype="void" access="public" output="false" hint="test oauth response" >
+	<cffunction name="testParseTemporaryOAuthResponseReturnsToken" returntype="void" access="public" output="false" hint="test oauth response" >
 		<cfscript>
 			var expected="testuser.130B763E6C0.687474703A2F2F6C6F63616C686F73742F6366657665726E6F74652F63616C6C6261636B2E63666D.BD5F4D71952B75C68799427C59754E72";
 			var actual = "";
 			
-			makePublic(variables.cfEvernote,"parseOauthTempTokenResponse");
+			makePublic(variables.cfEvernote,"parseOauthTokenResponse");
 			
 			
-			actual=variables.cfEvernote.parseOauthTempTokenResponse("oauth_token=testuser.130B763E6C0.687474703A2F2F6C6F63616C686F73742F6366657665726E6F74652F63616C6C6261636B2E63666D.BD5F4D71952B75C68799427C59754E72&oauth_token_secret=&oauth_callback_confirmed=true");
+			actual=variables.cfEvernote.parseOauthTokenResponse("oauth_token=testuser.130B763E6C0.687474703A2F2F6C6F63616C686F73742F6366657665726E6F74652F63616C6C6261636B2E63666D.BD5F4D71952B75C68799427C59754E72&oauth_token_secret=&oauth_callback_confirmed=true");
+			
+			assertEquals(expected,actual);
+		</cfscript>		
+	</cffunction>	
+	
+	<cffunction name="testParseCreentialOAuthResponseReturnsToken" returntype="void" access="public" output="false" hint="test oauth response" >
+		<cfscript>
+			var expected="S%3Ds1%3AU%3Dddec%3AE%3D130eaf46a27%3AC%3D130e5ce0e2b%3AP%3D7%3AA%3Dbittersweetryan%3AH%3D37086d55175a538e34cb194af4c7ee27";
+			var actual = "";
+			
+			makePublic(variables.cfEvernote,"parseOauthTokenResponse");
+			
+			
+			actual=variables.cfEvernote.parseOauthTokenResponse("oauth_token=S%3Ds1%3AU%3Dddec%3AE%3D130eaf46a27%3AC%3D130e5ce0e2b%3AP%3D7%3AA%3Dbittersweetryan%3AH%3D37086d55175a538e34cb194af4c7ee27&oauth_token_secret=&edam_shard=s1&edam_userId=56812");
 			
 			assertEquals(expected,actual);
 		</cfscript>		
@@ -93,10 +91,10 @@
 			var expected="";
 			var actual = "";
 			
-			makePublic(variables.cfEvernote,"parseOauthTempTokenResponse");
+			makePublic(variables.cfEvernote,"parseOauthTokenResponse");
 			
 			
-			actual=variables.cfEvernote.parseOauthTempTokenResponse("oauth_token_secret=&oauth_callback_confirmed=true");
+			actual=variables.cfEvernote.parseOauthTokenResponse("oauth_token_secret=&oauth_callback_confirmed=true");
 			
 			assertEquals(expected,actual);
 		</cfscript>		
@@ -107,10 +105,10 @@
 			var expected="";
 			var actual = "";
 			
-			makePublic(variables.cfEvernote,"parseOauthTempTokenResponse");
+			makePublic(variables.cfEvernote,"parseOauthTokenResponse");
 			
 			
-			actual=variables.cfEvernote.parseOauthTempTokenResponse("");
+			actual=variables.cfEvernote.parseOauthTokenResponse("");
 			
 			assertEquals(expected,actual);
 		</cfscript>		

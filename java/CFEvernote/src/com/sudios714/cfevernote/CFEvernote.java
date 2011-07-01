@@ -31,8 +31,8 @@ import org.apache.thrift.transport.TTransportException;
 
 public class CFEvernote {
    
-    private static final short VERSION_MAJOR = 0;
-    private static final short VERSION_MINOR = 1;
+    private static final short VERSION_MAJOR = 1;
+    private static final short VERSION_MINOR = 18;
     
     private String hostName;
     private String userStoreURL;
@@ -46,9 +46,6 @@ public class CFEvernote {
     
     private String userStoreQueryParam = "/edam/user";
     private String noteStoreBaseQueryParam = "/edam/note/";
-    
-    private static final String MAJOR = "0";
-    private static final String MINOR = "1";
     
     private UserStore.Client userStore;
     private NoteStore.Client noteStore;
@@ -170,7 +167,7 @@ public class CFEvernote {
      * @return returns the version number of this
      */
     public String getVersionNumber(){
-        return MAJOR.concat(".").concat(MINOR);
+        return String.valueOf(VERSION_MAJOR).concat(".").concat(String.valueOf(VERSION_MINOR));
     }
     
     public String getUserStoreURL(){
