@@ -50,6 +50,7 @@ public class CFEvernote {
     private UserStore.Client userStore;
     private NoteStore.Client noteStore;
     
+    private boolean initialized = false;
     /**
      * Default Constructer
      */
@@ -57,13 +58,13 @@ public class CFEvernote {
         this.hostName = "";
     }
     
-    public CFEvernote(String hostName){
+    public CFEvernote(String hostName, String userAgent){
         this.hostName = hostName;
         
         this.userStoreURL = "https://".concat(hostName).concat(this.userStoreQueryParam);
         this.noteStoreURLBase = "https://".concat(hostName).concat(this.noteStoreBaseQueryParam) ;
         
-        this.userAgent = "Java";
+        this.userAgent = userAgent;
     }
     
     public CFEvernote(String authTolken, String shard, String userID, String hostName, String userAgent) throws Exception{
@@ -78,13 +79,31 @@ public class CFEvernote {
         
         this.userAgent = userAgent;
         
-        this.intitialize();
+        this.initialized = this.initialize();
+    }
+    
+    /**
+     * public facing initialize method in case a user wants to create this object before oauth is done
+     * @param authToken
+     * @param shard
+     * @param userID
+     * @return
+     * @throws Exception 
+     */
+    public boolean initialize(String authToken, String shard, String userID) throws Exception{
+        this.shard = shard;
+        this.userID = userID;
+        this.authToken = authToken;
+        
+        this.setInitialized(this.initialize());
+        
+        return this.isInitialized();
     }
     
     /************************************************
      *                methods                       *
      ***********************************************/
-    private boolean intitialize() throws Exception {
+    private boolean initialize() throws Exception {
         
         //setup the userstore
         THttpClient userStoreTrans = new THttpClient(this.userStoreURL);
@@ -118,17 +137,21 @@ public class CFEvernote {
     /***
      * Will return top 100 notes if no number of notes is passed in
      */
-    public List listNotebooks(){
+    public ArrayList listNotebooks() throws Exception{
         return this.listNotebooks(100);
     }
     
-    public List listNotebooks(int maxNotes){    
+    public ArrayList listNotebooks(int maxNotes) throws Exception{    
 
-        List<Notebook> notebooks;
+        if(!this.isInitialized()){
+            throw new Exception("Object not initalized");
+        }
+            
+        ArrayList<Notebook> notebooks;
         
         try{
             // First, get a list of all notebooks
-            notebooks = noteStore.listNotebooks(authToken);
+            notebooks = (ArrayList)noteStore.listNotebooks(authToken);
             
             if(notebooks.size() > maxNotes){
                 for(int i=maxNotes;i < notebooks.size(); i++){
@@ -138,7 +161,7 @@ public class CFEvernote {
                 
         }
         catch(Exception ex){
-            notebooks = new ArrayList();
+            throw ex;
         }
         
         return notebooks;
@@ -232,5 +255,19 @@ public class CFEvernote {
      */
     public void setUserID(String userID) {
         this.userID = userID;
+    }
+
+    /**
+     * @return the initialized
+     */
+    public boolean isInitialized() {
+        return initialized;
+    }
+
+    /**
+     * @param initialized the initialized to set
+     */
+    public void setInitialized(boolean initialized) {
+        this.initialized = initialized;
     }
 }

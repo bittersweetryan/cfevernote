@@ -25,16 +25,16 @@ THE SOFTWARE.
 		//instance scope
 		variables.instance = structNew();
 		
-		//api information
-		instance.apiKey = "";
-		instance.apiAccount = "";
-		instance.evernoteHost = "";
-		instance.userStoreURL = "";
-		instance.userStorURLBase = "";
-		
 		//oauth information
 		variables.instance.oAuth = structNew();
 		
+		//your evernote api key (secret)
+		instance.oAuth.apiKey = "";
+		//your evernote api account name
+		instance.oAuth.apiAccount = "";
+		//evernote host to connect to (test: sandbox.evernote.com, production: www.evernote.com)
+		instance.oAuth.evernoteHost = "";
+		//url for the oauth callback to return to
 		instance.oAuth.callbackURL = "";
 		//url for obtaining temporary token and credentials form evernote
 		instance.oAuth.evernoteOAuthURL = "";		
@@ -60,10 +60,14 @@ THE SOFTWARE.
 		instance.evernote.userAgent = "CFEvernote (ColdFusion) ";
 		
 		instance.evernote.authCredentials = "";
+
+		instance.classLoader = createObject("component", "JavaLoader").init(["#getDirectoryFromPath(getCurrentTemplatePath())#lib/CFEvernote.jar","#getDirectoryFromPath(getCurrentTemplatePath())#lib/evernote-api-1.18.jar","#getDirectoryFromPath(getCurrentTemplatePath())#lib/libthrift.jar"]);  
 		
-		paths = ["lib/CFEvernote.jar"];
-		
-		instance.classLoader = createObject("component", "JavaLoader").init();  
+		//there are two constructors for the CFEvernote java class, one with all the user information and one with just setup information.
+		//here I'll use the one with setup information and use mutators to set the user information once we authenticate
+		//Default constructor:  public CFEvernote()
+    	//Minimal constructor: public CFEvernote(String hostName, String userAgent){
+        //Full constructor: public CFEvernote(String authTolken, String shard, String userID, String hostName, String userAgent)
 		instance.cfEvernote = "";
 	</cfscript>
 
@@ -75,20 +79,22 @@ THE SOFTWARE.
 		
 		<cfscript>
 			if(arguments.apiKey neq "")
-				instance.apiKey = arguments.apiKey;
+				instance.oAuth.apiKey = arguments.apiKey;
 			
 			if(arguments.apiAccount neq "")
-				instance.apiAccount = arguments.apiAccount;
+				instance.oAuth.apiAccount = arguments.apiAccount;
 			
 			if(arguments.evernoteHost neq ""){
-				instance.evernoteHost = arguments.evernoteHost;
+				instance.oAuth.evernoteHost = arguments.evernoteHost;
 				
 				instance.oAuth.evernoteOAuthURL = "https://" & arguments.evernoteHost & instance.oAuth.evernoteOAuthQueryLink;
 			}
 			
 			if(arguments.callbackURL neq "")
 				instance.oAuth.callbackURL = arguments.callbackURL;
-							
+			
+			instance.cfEvernote = instance.classLoader.create("com.sudios714.cfevernote.CFEvernote").init(instance.oAuth.evernoteHost, instance.evernote.userAgent);
+					
 			return this;
 		</cfscript>
 	</cffunction>
@@ -105,7 +111,7 @@ THE SOFTWARE.
 			}
 			else{
 				instance.oAuth.temporaryAuthToken = temporaryAuthToken;
-				instance.oAuth.evernoteOAuthVerifyURL = "https://" & instance.evernoteHost & instance.oAuth.evernoteOAuthVerifyQueryLink & temporaryAuthToken;
+				instance.oAuth.evernoteOAuthVerifyURL = "https://" & instance.oAuth.evernoteHost & instance.oAuth.evernoteOAuthVerifyQueryLink & temporaryAuthToken;
 				return true;
 			}
 		</cfscript>
@@ -113,7 +119,7 @@ THE SOFTWARE.
 	
 	<cffunction name="getTemporaryAuthTokenFromEvernote" returntype="String" access="private" output="false" hint="I get a temporary access Token for o-auth" >
 		<!-- maybe refactor building url out to new method -->
-		<cfhttp url="#instance.oAuth.evernoteOAuthURL#?oauth_consumer_key=#instance.apiAccount#&oauth_signature=#instance.apiKey#&oauth_signature_method=PLAINTEXT&
+		<cfhttp url="#instance.oAuth.evernoteOAuthURL#?oauth_consumer_key=#instance.oAuth.apiAccount#&oauth_signature=#instance.oAuth.apiKey#&oauth_signature_method=PLAINTEXT&
 					oauth_timestamp=#getTickCount()#&oauth_callback=#URLEncodedFormat(instance.oAuth.callbackURL)#&oauth_nonce=#hash(createUUID(),'md5')#" result="oauthResult" />
 					
 		<cfscript>
@@ -152,28 +158,33 @@ THE SOFTWARE.
 				response = getCredentialsRequest(_authToken,_authVerifier);
 			}
 			
-			if(NOT response){
+			if(NOT len(response)){
 				//do something to handle errors
+			}
+			else{
+				instance.oAuth.authToken = URLDecode(parseOauthTokenResponse(response));
+				instance.evernote.shard = parseOauthShardResponse(response);
+				instance.evernote.userID = parseOauthUserIDResponse(response);
+			
+				//don't forget to initialize if we haven't already
+				if(!instance.cfEvernote.isInitialized())
+					instance.cfEvernote.initialize(instance.oAuth.authToken,instance.evernote.shard,instance.evernote.userID);
 			}
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="getCredentialsRequest" returntype="Boolean" access="private" output="true" hint="I call the evernote API to get credentials (oauth step 3) and return the result" >
+	<cffunction name="getCredentialsRequest" returntype="String" access="private" output="true" hint="I call the evernote API to get credentials (oauth step 3) and return the result" >
 		<cfargument name="authToken" type="String" required="false" default="" displayname="" hint="oauth authorization Token" />
 		<cfargument name="authVerifier" type="String" required="false" default="" displayname="" hint="oauth verification Token" />
 				
-		<cfhttp url="#instance.oAuth.evernoteOAuthURL#?oauth_consumer_key=#instance.apiAccount#&oauth_signature=#instance.apiKey#&oauth_signature_method=PLAINTEXT&oauth_timestamp=#getTickCount()#&oauth_nonce=#hash(createUUID(),'md5')#&oauth_token=#arguments.authToken#&oauth_verifier=#arguments.authVerifier#" result="oauthResult" />
+		<cfhttp url="#instance.oAuth.evernoteOAuthURL#?oauth_consumer_key=#instance.oAuth.apiAccount#&oauth_signature=#instance.oAuth.apiKey#&oauth_signature_method=PLAINTEXT&oauth_timestamp=#getTickCount()#&oauth_nonce=#hash(createUUID(),'md5')#&oauth_token=#arguments.authToken#&oauth_verifier=#arguments.authVerifier#" result="oauthResult" />
 
 		<cfscript>
 		if(oauthResult.Responseheader.Status_Code neq "200"){
-				return false;
+				return "";
 			}
-			else
-			{
-				instance.oAuth.authToken = URLDecode(parseOauthTokenResponse(oauthResult.fileContent));
-				instance.evernote.shard = parseOauthShardResponse(oauthResult.fileContent);
-				instance.evernote.userID = parseOauthUserIDResponse(oauthResult.fileContent);
-				return true;
+			else{
+				return oauthResult.fileContent;
 			}	
 		</cfscript>		
 	</cffunction>
@@ -214,32 +225,38 @@ THE SOFTWARE.
 				return "";
 		</cfscript>
 	</cffunction>
+	
+	<cffunction name="getNotebooks" returntype="any" access="public" output="false" hint="I return a list of a users notebooks" >
+		<cfscript>
+			return instance.cfEvernote.listNotebooks();
+		</cfscript>
+	</cffunction>
 	<!--------------------------------------------
 	*   	     Mutaters and Accessors          *
 	--------------------------------------------->
 	<cffunction name="getApiKey" returntype="string" roles="" access="public" output="false" displayname="" hint="" description="">
 		<cfscript>
-			return instance.apiKey;
+			return instance.oAuth.apiKey;
 		</cfscript>
 	</cffunction>
 	
 	<cffunction name="setApiKey" returntype="void" roles="" access="public" output="false" displayname="" hint="" description="">
 		<cfargument name="apiKey" type="String" required="false" default="" displayname="" hint="" />
 		<cfscript>
-			instance.apiKey = arguments.apiKey;
+			instance.oAuth.apiKey = arguments.apiKey;
 		</cfscript>
 	</cffunction>
 	
 	<cffunction name="getApiAccount" returntype="string" roles="" access="public" output="false" displayname="" hint="" description="">
 		<cfscript>
-			return instance.apiAccount;
+			return instance.oAuth.apiAccount;
 		</cfscript>
 	</cffunction>
 	
 	<cffunction name="setApiAccount" returntype="void" roles="" access="public" output="false" displayname="" hint="" description="">
 		<cfargument name="apiAccount" type="String" required="false" default="" displayname="" hint="" />
 		<cfscript>
-			instance.apiAccount = arguments.apiAccount;
+			instance.oAuth.apiAccount = arguments.apiAccount;
 		</cfscript>
 	</cffunction>
 	
@@ -298,4 +315,19 @@ THE SOFTWARE.
 			return instance.oAuth.evernoteOAuthVerifyURL;
 		</cfscript>
 	</cffunction>
+	
+	<cffunction name="setCFEvernote" returntype="void" access="public" output="false" hint="I set the cfevernote object, this is primarily for testing." >
+		<cfargument name="cfEvernote" type="any">
+		<cfscript>
+			instance.cfEvernote = arguments.cfEvernote;
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="getCFEvernote" returntype="any" access="public" output="false" hint="I set the cfevernote object, this is primarily for testing." >
+		<cfscript>
+			return instance.cfEvernote;
+		</cfscript>
+	</cffunction>
+
+	<!--- get method for determining if the evernote object is initialized or not--->
 </cfcomponent>

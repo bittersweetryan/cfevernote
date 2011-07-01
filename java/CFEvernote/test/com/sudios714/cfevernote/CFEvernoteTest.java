@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import java.io.*;
+import java.util.ArrayList;
 
 public class CFEvernoteTest {
     
@@ -75,7 +76,17 @@ public class CFEvernoteTest {
     @Test
     public void testGetNotebookListWithoutPassingInMaxNumber(){
         
-        this.instance.listNotebooks();
+        try{
+            ArrayList notebooks = (ArrayList)this.instance.listNotebooks();
+            //this test is a little fragile since it depends on the number of notebooks in the account, should make better
+            int expected = 2;
+            int actual = notebooks.size();
+
+            assertEquals(expected,actual);
+        }
+        catch(Exception ex){
+            fail("Exception thrown by listNotebooks()");
+        }
     }
     
     @Test
@@ -103,5 +114,13 @@ public class CFEvernoteTest {
         String actual = this.instance.getAuthToken();
         
         assertEquals(expected,actual);
+    }
+    
+    @Test (expected=Exception.class)
+    public void testCallingGetNotesbooksWithoutInitilzingThrowsError() throws Exception{
+        CFEvernote cfe = new CFEvernote();
+        
+            cfe.listNotebooks();
+   
     }
 }

@@ -3,7 +3,8 @@
 	
 <cfscript>
 	//its best to persist this object somewhere since the oauth process will require saving state
-	if(NOT structKeyExists(session,"cfEvernote")){
+	
+	if(NOT structKeyExists(session,"cfEvernote") OR isDefined("url.reset")){
 		
 		session.cfEvernote = new CFEvernote(configArray[1],configArray[2],"sandbox.evernote.com","http://localhost/cfevernote/callback.cfm");
 		
@@ -21,14 +22,17 @@
 		session.cfEvernote.setAuthVerifier(url.oauth_verifier);
 		session.cfEvernote.getTokenCredentials();
 	}
-	
 
-	writedump(session.cfEvernote.getAuthToken());
-	writedump(session.cfEvernote.getShard());
-	writedump(session.cfEvernote.getUserID());
-	
 </cfscript>
 
 <cfoutput>
 		<a href="#session.cfEvernote.getEvernoteOAuthVerifyURL()#">Auth</a>
 </cfoutput>
+
+<cfscript >
+	writedump(session.cfEvernote.getAuthToken());
+	writedump(session.cfEvernote.getShard());
+	writedump(session.cfEvernote.getUserID());
+	
+	writedump(session.cfEvernote.getNotebooks());
+</cfscript>
