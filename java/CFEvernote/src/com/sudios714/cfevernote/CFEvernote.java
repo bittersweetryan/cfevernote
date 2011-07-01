@@ -34,6 +34,8 @@ public class CFEvernote {
     private static final short VERSION_MAJOR = 1;
     private static final short VERSION_MINOR = 18;
     
+    private static final int DEFAULT_ROWS_RETURNED = 100;
+    
     private String hostName;
     private String userStoreURL;
     private String noteStoreURLBase;
@@ -135,10 +137,10 @@ public class CFEvernote {
     }
     
     /***
-     * Will return top 100 notes if no number of notes is passed in
+     * Will return the default number of notebooks if no number of notes is passed in
      */
     public ArrayList listNotebooks() throws Exception{
-        return this.listNotebooks(100);
+        return this.listNotebooks(DEFAULT_ROWS_RETURNED);
     }
     
     public ArrayList listNotebooks(int maxNotes) throws Exception{    

@@ -60,8 +60,6 @@ THE SOFTWARE.
 		instance.evernote.userAgent = "CFEvernote (ColdFusion) ";
 		
 		instance.evernote.authCredentials = "";
-
-		instance.classLoader = createObject("component", "JavaLoader").init(["#getDirectoryFromPath(getCurrentTemplatePath())#lib/CFEvernote.jar","#getDirectoryFromPath(getCurrentTemplatePath())#lib/evernote-api-1.18.jar","#getDirectoryFromPath(getCurrentTemplatePath())#lib/libthrift.jar"]);  
 		
 		//there are two constructors for the CFEvernote java class, one with all the user information and one with just setup information.
 		//here I'll use the one with setup information and use mutators to set the user information once we authenticate
@@ -76,6 +74,7 @@ THE SOFTWARE.
 		<cfargument name="apiKey" type="string" required="false" default="" />
 		<cfargument name="evernoteHost" type="string" required="false" default="" />
 		<cfargument name="callbackURL" type="string" required="false" default="" />
+		<cfargument name="libDirectory" type="string" required="false" default="lib">
 		
 		<cfscript>
 			if(arguments.apiKey neq "")
@@ -93,6 +92,7 @@ THE SOFTWARE.
 			if(arguments.callbackURL neq "")
 				instance.oAuth.callbackURL = arguments.callbackURL;
 			
+			instance.classLoader = createObject("component", "JavaLoader").init(["#getDirectoryFromPath(getCurrentTemplatePath())##libDirectory#/CFEvernote.jar","#getDirectoryFromPath(getCurrentTemplatePath())##libDirectory#/evernote-api-1.18.jar","#getDirectoryFromPath(getCurrentTemplatePath())##libDirectory#/libthrift.jar"]);  
 			instance.cfEvernote = instance.classLoader.create("com.sudios714.cfevernote.CFEvernote").init(instance.oAuth.evernoteHost, instance.evernote.userAgent);
 					
 			return this;

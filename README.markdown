@@ -3,14 +3,4 @@
 Cfevernote is a evernote api wrapper for coldfusion that uses the cfevernote jar and the apache thrift library.  Also included is Mark Mandel's java loader class.
 
 ## Installation
-Copy lib directory to your web application's root
-
-## To use in ColdFusion 9 or newer:
-	cfevernote = new CFEvernote(apiKey,apiAccountName);
-
-	cfevernote.authenticate(username,password);
-		
-## To use in ColdFusion 6, 7, & 8:	
-	cfevernote = CreateObject("component","CFEvernote).Init(apiKey,apiAccountName);
-	
-	cfevernote.authenticate(username,password);
+Copy all contents of "lib" a directory in your application. By default this is "lib", if you choose another directory you can pass in an argument to the constructor called "libDirectory" with its relative location to where this component lives.  Also copy the CFEvernote.cfc and JavaLoade.cfc files to your websites object directory.
