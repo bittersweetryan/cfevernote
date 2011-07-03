@@ -35,6 +35,7 @@ public class CFEvernote {
     private static final short VERSION_MINOR = 18;
     
     private static final int DEFAULT_ROWS_RETURNED = 100;
+    private static final int DEFAULT_MAX_ROWS = 9999;
     
     private String hostName;
     private String userStoreURL;
@@ -167,8 +168,43 @@ public class CFEvernote {
         }
         
         return notebooks;
-  }
+    }
     
+    public ArrayList listNotes() throws Exception{
+        
+        return this.listNotes(DEFAULT_ROWS_RETURNED);
+    }
+    
+    public ArrayList listNotes(int maxNotes)  throws Exception {    
+        
+        if(!this.isInitialized()){
+            throw new Exception("Object not initalized");
+        }
+        
+        // First, get a list of all notebooks
+        ArrayList<Notebook> notebooks = this.listNotebooks(DEFAULT_MAX_ROWS);
+        
+        ArrayList<Note> notes = new ArrayList();
+        
+        for (Notebook notebook : notebooks) {
+            
+          NoteFilter filter = new NoteFilter();
+
+          filter.setNotebookGuid(notebook.getGuid());
+          filter.setOrder(NoteSortOrder.CREATED.getValue());
+          filter.setAscending(true);
+
+          NoteList noteList = noteStore.findNotes(authToken, filter, 0, maxNotes);
+          
+          ArrayList<Note> notebookNotes = (ArrayList)noteList.getNotes();
+
+          for (Note note : notebookNotes) {
+              notes.add(note);
+          }
+        }
+    
+        return notes;
+  }
     
     /************************************************
      *           mutators and accessors             *

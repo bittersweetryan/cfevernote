@@ -226,9 +226,21 @@ THE SOFTWARE.
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="getNotebooks" returntype="any" access="public" output="false" hint="I return a list of a users notebooks" >
+	<cffunction name="getNotebooks" returntype="Array" access="public" output="false" hint="I return a list of a users notebooks" >
 		<cfscript>
 			return instance.cfEvernote.listNotebooks();
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="getNotes" returntype="Array" access="public" output="false" hint="I return a list of a users notebooks" >
+		<cfscript>
+			return instance.cfEvernote.listNotes();
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="getNotesForNotebook" returntype="Array" access="public" output="false" hint="I return a list " >
+		<cfscript >
+			return ArrayNew();
 		</cfscript>
 	</cffunction>
 	<!--------------------------------------------
