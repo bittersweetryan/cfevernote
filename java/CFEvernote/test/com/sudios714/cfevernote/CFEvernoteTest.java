@@ -4,6 +4,8 @@
  */
 package com.sudios714.cfevernote;
 
+import com.evernote.edam.type.Note;
+import com.evernote.edam.type.Notebook;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,6 +23,7 @@ public class CFEvernoteTest {
     private static final String EVERNOTE_URL = "sandbox.evernote.com";
     private static final String USER_AGENT = "CFEvernote Test";
     private static final String VERSION = "1.18";
+    private static final String DEFAULT_NOTEBOOK_GUID = "aac89a28-c080-4bde-92f6-9eaa8c27ee49";
     
     public CFEvernoteTest() {
     }
@@ -140,6 +143,28 @@ public class CFEvernoteTest {
         
         ArrayList notes = this.instance.listNotes(2);
         int actual = notes.size();
+        
+        assertEquals(expected,actual);
+    }
+    
+    @Test
+    public void testGetDefaultNotebookShouldReturnNotebook() throws Exception{
+        Class expected = Notebook.class;
+        
+        Notebook notebook = this.instance.getDefaultNotebook();
+        System.out.print("GUID" + notebook.getGuid());
+        Class actual = notebook.getClass().getClass();
+        
+        assertEquals(expected,actual);
+    }
+    
+    @Test
+    public void testGetNotebookShouldReturnNotebook() throws Exception{
+        String expected = "aac89a28-c080-4bde-92f6-9eaa8c27ee49";
+        
+        Notebook notebook = this.instance.getNotebook(DEFAULT_NOTEBOOK_GUID);
+        
+        String actual = notebook.getGuid();
         
         assertEquals(expected,actual);
     }

@@ -58,8 +58,15 @@ THE SOFTWARE.
 		instance.evernote.userID = ""; //might not need to persist this
 		//used when creating the evernote java object, gets passed to evernote
 		instance.evernote.userAgent = "CFEvernote (ColdFusion) ";
-		
 		instance.evernote.authCredentials = "";
+		
+		//search modifiers
+		instance.evernote.search.notModifier = "-";
+		instance.evernote.search.scopeModifiers = {notebook="notebook:",any="any:"};
+		instance.evernote.search.searchPropertyModifiers = {tag="tag:",title="intitie:",createdDate="created:",updatedDate="updated:",resourceType="resource:"};
+		instance.evernote.search.searchAttributeModifiers = {latitude="latitude:",longitude="longitude:",altitude="altitude:",author="author:",
+															 source={word="source:app.ms.word",microsoft="source:app.ms.*",web="source:web.clip",email="source:mail.clip",
+															 emailMessage="source:mail.smtp",mobile="source:mobile.*"},recoType={hand="recoType:handwritten",all="recoType:*"}};
 		
 		//there are two constructors for the CFEvernote java class, one with all the user information and one with just setup information.
 		//here I'll use the one with setup information and use mutators to set the user information once we authenticate
@@ -67,6 +74,8 @@ THE SOFTWARE.
     	//Minimal constructor: public CFEvernote(String hostName, String userAgent){
         //Full constructor: public CFEvernote(String authTolken, String shard, String userID, String hostName, String userAgent)
 		instance.cfEvernote = "";
+		
+		
 	</cfscript>
 
 	<cffunction name="init" returntype="CFEvernote" access="public" hint="Default constructor for the cfevernote plugin">
@@ -236,6 +245,19 @@ THE SOFTWARE.
 		</cfscript>
 	</cffunction>
 	
+	<cffunction name="getNotebook" returntype="any" access="public" output="false" hint="I return a specific notebook based on its guid" >
+		<cfargument name="notebookID" type="numeric" required="false" default="0" hint="notebook ID to get" />
+		<cfscript>
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="getNotesForNotebook" returntype="Array" access="public" output="false" hint="I return a list " >
+		<cfargument name="notebookID" type="numeric" required="false" default="0" hint="notebook ID to get notes from" />
+		<cfscript>
+			
+		</cfscript>
+	</cffunction>
+	
 	<cffunction name="getNotes" returntype="Array" access="public" output="false" hint="I return a list of a users notebooks" >
 		<cfargument name="maxCount" type="numeric" required="false" default="9999" hint="The maximum number of notes to get" />
 		<cfscript>
@@ -246,11 +268,7 @@ THE SOFTWARE.
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="getNotesForNotebook" returntype="Array" access="public" output="false" hint="I return a list " >
-		<cfscript >
-			return ArrayNew(1);
-		</cfscript>
-	</cffunction>
+
 	<!--------------------------------------------
 	*   	     Mutaters and Accessors          *
 	--------------------------------------------->
@@ -330,6 +348,7 @@ THE SOFTWARE.
 		</cfscript>
 	</cffunction>
 	
+	<!--- Add different methods here for the oauth display,large, small, mobile, etc--->
 	<cffunction name="getEvernoteOAuthVerifyURL" access="public" output="false" returntype="any">
 		<cfscript>
 			return instance.oAuth.evernoteOAuthVerifyURL;

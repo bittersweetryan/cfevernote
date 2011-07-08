@@ -41,6 +41,8 @@
 	</ul>
 	
 	<cfif isDefined("url.method") AND url.method eq "getNotebooks">
+		<cfset notebooks = session.cfEvernote.getNotebooks() />
+		<cfdump var="#getMetaData(notebooks[1])#" />
 		<cfdump var="#session.cfEvernote.getNotebooks()#">
 	<cfelseif isDefined("url.method") AND url.method eq "getNotes">
 		<cfdump var="#session.cfEvernote.getNotes()#">

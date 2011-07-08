@@ -21,6 +21,7 @@ import com.evernote.edam.error.*;
 import com.evernote.edam.userstore.Constants;
 import com.evernote.edam.type.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 //imprt thrift
@@ -146,9 +147,8 @@ public class CFEvernote {
     
     public ArrayList listNotebooks(int maxNotes) throws Exception{    
 
-        if(!this.isInitialized()){
-            throw new Exception("Object not initalized");
-        }
+        this.checkInitialized();
+
             
         ArrayList<Notebook> notebooks;
         
@@ -170,6 +170,20 @@ public class CFEvernote {
         return notebooks;
     }
     
+    public Notebook getNotebook(String guid) throws Exception{
+        
+        this.checkInitialized();
+
+        
+        return noteStore.getNotebook(authToken, guid);
+    }
+    
+    public Notebook getDefaultNotebook() throws Exception{
+        this.checkInitialized();
+        
+        return this.noteStore.getDefaultNotebook(authToken);
+    }
+    
     public ArrayList listNotes() throws Exception{
         
         return this.listNotes(DEFAULT_ROWS_RETURNED);
@@ -177,9 +191,7 @@ public class CFEvernote {
     
     public ArrayList listNotes(int maxNotes)  throws Exception {    
         
-        if(!this.isInitialized()){
-            throw new Exception("Object not initalized");
-        }
+        this.checkInitialized();
         
         // First, get a list of all notebooks
         ArrayList<Notebook> notebooks = this.listNotebooks(DEFAULT_MAX_ROWS);
@@ -207,7 +219,54 @@ public class CFEvernote {
         }
     
         return notes;
-  }
+    }
+    
+    /**
+    * Search a user's notes and display the results, I made a design decision to not abstract the details of a search
+    * out of the coldfusion component.  This means that a formatted search string is expected
+    */
+    
+    public ArrayList searchNotes(String formattedSearchString) throws Exception{
+        return this.searchNotes(formattedSearchString,DEFAULT_ROWS_RETURNED);
+    }
+    
+    /**
+    * Search a user's notes and display the results, I made a design decision to not abstract the details of a search
+    * out of the coldfusion component.  This means that a formatted search string is expected
+    */
+    public ArrayList searchNotes(String formattedSearchString, int maxRows) throws Exception{
+    
+        ArrayList<Note> noteList = new ArrayList();
+
+        NoteFilter filter = new NoteFilter();
+        filter.setWords(formattedSearchString);
+
+        // Find the first 100 notes matching the search
+        NoteList notes = noteStore.findNotes(authToken, filter, 0, maxRows);
+
+        Iterator<Note> iter = notes.getNotesIterator();
+
+        while (iter.hasNext()) {
+
+            Note note = (Note)iter.next();
+            // Note objects returned by findNotes() only contain note attributes
+            // such as title, GUID, creation date, update date, etc. The note content 
+            // and binary resource data are omitted, although resource metadata is included. 
+            // To get the note content and/or binary resources, call getNote() using the note's GUID.
+
+            Note fullNote = noteStore.getNote(authToken, note.getGuid(), true, true, false, false);
+
+            noteList.add(fullNote);
+        }
+        
+        return noteList;
+    }
+    
+    private void checkInitialized() throws Exception{
+         if(!this.isInitialized()){
+            throw new Exception("Object not initalized");
+        }
+    }
     
     /************************************************
      *           mutators and accessors             *

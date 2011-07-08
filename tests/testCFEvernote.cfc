@@ -10,9 +10,9 @@
 		<cfscript>
 			variables.cfEvernote = createObject("component","CFEvernote").Init(variables.configArray[1],variables.configArray[2],"sandbox.evernote.com","http://localhost/cfevernote/callback.cfm");
 			
-			mockCFEvernoteJava = createObject("component","mockCFEvernote");
+			cfEvernoteStub = createObject("component","CFEvernoteStub");
 			
-			variables.cfEvernote.setCFEvernote(mockCFEvernoteJava);
+			variables.cfEvernote.setCFEvernote(cfEvernoteStub);
 		</cfscript>		
 	</cffunction>
 	
