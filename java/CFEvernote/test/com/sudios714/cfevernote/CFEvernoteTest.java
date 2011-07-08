@@ -15,7 +15,7 @@ public class CFEvernoteTest {
     
     CFEvernote instance;
     
-    private static final String AUTH_TOKEN = "S=s1:U=ddec:E=130eaf46a27:C=130e5ce0e2b:P=7:A=bittersweetryan:H=37086d55175a538e34cb194af4c7ee27";
+    private static final String AUTH_TOKEN = "S=s1:U=ddec:E=1310ed1a7b8:C=13109ab4bb8:P=7:A=bittersweetryan:H=245fd9e94c00b668887c6a3b98dbb426";
     private static final String SHARD = "s1";
     private static final String USER_ID = "56812";
     private static final String EVERNOTE_URL = "sandbox.evernote.com";
@@ -122,5 +122,25 @@ public class CFEvernoteTest {
         
             cfe.listNotebooks();
    
+    }
+    
+    @Test
+    public void testGetNotesWithNoMaxReturnsNotes() throws Exception{
+        int expected = 3;
+        
+        ArrayList notes = this.instance.listNotes();
+        int actual = notes.size();
+        
+        assertEquals(expected,actual);
+    } 
+    
+    @Test
+    public void testGetNotesWitMaxReturnsMaxNumberOfNotes() throws Exception{
+        int expected = 2;
+        
+        ArrayList notes = this.instance.listNotes(2);
+        int actual = notes.size();
+        
+        assertEquals(expected,actual);
     }
 }

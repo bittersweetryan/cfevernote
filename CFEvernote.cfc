@@ -227,20 +227,28 @@ THE SOFTWARE.
 	</cffunction>
 	
 	<cffunction name="getNotebooks" returntype="Array" access="public" output="false" hint="I return a list of a users notebooks" >
+		<cfargument name="maxCount" type="numeric" hint="The maximum number of notebooks to get" default="0" />
 		<cfscript>
-			return instance.cfEvernote.listNotebooks();
+			if(arguments.maxCount)
+				return instance.cfEvernote.listNotebooks(arguments.maxCount);
+			else
+				return instance.cfEvernote.listNotebooks();
 		</cfscript>
 	</cffunction>
 	
 	<cffunction name="getNotes" returntype="Array" access="public" output="false" hint="I return a list of a users notebooks" >
+		<cfargument name="maxCount" type="numeric" required="false" default="9999" hint="The maximum number of notes to get" />
 		<cfscript>
-			return instance.cfEvernote.listNotes();
+			if(arguments.maxCount)
+				return instance.cfEvernote.listNotes(maxCount);
+			else
+				return instance.cfEvernote.listNotes();
 		</cfscript>
 	</cffunction>
 	
 	<cffunction name="getNotesForNotebook" returntype="Array" access="public" output="false" hint="I return a list " >
 		<cfscript >
-			return ArrayNew();
+			return ArrayNew(1);
 		</cfscript>
 	</cffunction>
 	<!--------------------------------------------

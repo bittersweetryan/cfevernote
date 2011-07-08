@@ -201,6 +201,9 @@ public class CFEvernote {
           for (Note note : notebookNotes) {
               notes.add(note);
           }
+          
+          if(notes.size() == maxNotes)
+              break;
         }
     
         return notes;

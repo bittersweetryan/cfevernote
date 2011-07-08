@@ -26,13 +26,29 @@
 </cfscript>
 
 <cfoutput>
-		<a href="#session.cfEvernote.getEvernoteOAuthVerifyURL()#">Auth</a>
+	<ul>
+		<li>
+			<a href="#session.cfEvernote.getEvernoteOAuthVerifyURL()#">Auth</a>
+		</li>
+		<li>
+			<a href="callback.cfm?reset=true">Reset</a>
+		<li>
+			<a href="callback.cfm?method=getNotebooks">Get Notebooks</a>
+		</li>
+		<li>
+			<a href="callback.cfm?method=getNotes">Get Notes</a>
+		</li>
+	</ul>
+	
+	<cfif isDefined("url.method") AND url.method eq "getNotebooks">
+		<cfdump var="#session.cfEvernote.getNotebooks()#">
+	<cfelseif isDefined("url.method") AND url.method eq "getNotes">
+		<cfdump var="#session.cfEvernote.getNotes()#">
+	</cfif>
 </cfoutput>
 
 <cfscript >
 	writedump(session.cfEvernote.getAuthToken());
 	writedump(session.cfEvernote.getShard());
 	writedump(session.cfEvernote.getUserID());
-	
-	writedump(session.cfEvernote.getNotebooks());
 </cfscript>

@@ -9,6 +9,10 @@
 	<cffunction name="setUp" access="public" output="false" returntype="void">
 		<cfscript>
 			variables.cfEvernote = createObject("component","CFEvernote").Init(variables.configArray[1],variables.configArray[2],"sandbox.evernote.com","http://localhost/cfevernote/callback.cfm");
+			
+			mockCFEvernoteJava = createObject("component","mockCFEvernote");
+			
+			variables.cfEvernote.setCFEvernote(mockCFEvernoteJava);
 		</cfscript>		
 	</cffunction>
 	
@@ -182,15 +186,43 @@
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="testGetOAuthCredentials"  returntype="void" access="public" output="false" hint="" >
+	<cffunction name="testGetNotebooksWithNoParamReturnsArrayOf9999"  returntype="void" access="public" output="false" hint="I test that the get notebooks method returns an array of notebooks" >
 		<cfscript>
-			fail("no test written yet");
-			/*
-			var expected = "";
-			var actual = "";
+			var notes = variables.cfEvernote.getNotebooks();
+			var expected = 9999;
+			var actual = arrayLen(notes);
 			
 			assertEquals(expected,actual);
-			*/
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testGetNotebooksWithMaxNotesReturnsArrayOfThatSize"  returntype="void" access="public" output="false" hint="I test that the get notebooks method returns an array of notebooks" >
+		<cfscript>
+			var notes = variables.cfEvernote.getNotebooks(10);
+			var expected = 10;
+			var actual = arrayLen(notes);
+			
+			assertEquals(expected,actual);
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testGetNotesWithNoParamReturnsArrayOf9999"  returntype="void" access="public" output="false" hint="I test that the get notebooks method returns an array of notebooks" >
+		<cfscript>
+			var notes = variables.cfEvernote.getNotes();
+			var expected = 9999;
+			var actual = arrayLen(notes);
+			
+			assertEquals(expected,actual);
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testGetNotesWithMaxNotesReturnsArrayOfThatSize"  returntype="void" access="public" output="false" hint="I test that the get notebooks method returns an array of notebooks" >
+		<cfscript>
+			var notes = variables.cfEvernote.getNotes(12);
+			var expected = 12;
+			var actual = arrayLen(notes);
+			
+			assertEquals(expected,actual);
 		</cfscript>
 	</cffunction>
 </cfcomponent>
