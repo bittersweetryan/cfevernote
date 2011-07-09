@@ -76,4 +76,5 @@
 			instance.notebook.setDefaultNotebook(JavaCast("boolean",arguments.isDefaultNotebook));
 		</cfscript>
 	</cffunction>
+	
 </cfcomponent>
