@@ -71,4 +71,26 @@
 			assertEquals(expected,actual);
 		</cfscript>
 	</cffunction>
+	
+	<cffunction name="testGetIsDefault"  returntype="void" access="public" output="false" hint="I test getting weather a notebook is default or not" >
+		<cfscript>
+			var expected = false;
+			var actual = variables.notebook.isDefaultNotebook();
+			
+			assertEquals(expected,actual);
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testSetDefault"  returntype="void" access="public" output="false" hint="I test setting the default notebook" >
+		<cfscript>
+			var expected = true;
+			var actual = "";
+			
+			variables.notebook.setDefaultNotebook(true);
+			
+			actual = variables.notebook.isDefaultNotebook();
+			
+			assertEquals(expected,actual);
+		</cfscript>
+	</cffunction>
 </cfcomponent>

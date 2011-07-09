@@ -63,4 +63,17 @@
 			instance.notebook.setName(arguments.notebookName);
 		</cfscript>
 	</cffunction>
+	
+	<cffunction name="isDefaultNotebook" returntype="boolean" access="public" output="false" hint="I tell weather this notebook is default or not" >
+		<cfscript>
+			return instance.notebook.isDefaultNotebook();
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="setDefaultNotebook" returntype="void" access="public" output="false" hint="I set weather this is the default notebook or not" >
+		<cfargument name="isDefaultNotebook" type="boolean" required="false" default="false" />
+		<cfscript>
+			instance.notebook.setDefaultNotebook(JavaCast("boolean",arguments.isDefaultNotebook));
+		</cfscript>
+	</cffunction>
 </cfcomponent>
