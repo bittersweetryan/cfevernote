@@ -6,11 +6,15 @@
 	
 	<cffunction name="init" returntype="Notebook" access="public" output="false" hint="I am the constructor for the notbook component" >
 		<cfargument name="libDirectory" type="string" required="false" default="lib">
+		<cfargument name="notebook" type="any" required="false" default="" displayname="" />
 		<cfscript>
 			instance.classLoader = createObject("component", "JavaLoader").init(["#getDirectoryFromPath(getCurrentTemplatePath())##libDirectory#/CFEvernote.jar","#getDirectoryFromPath(getCurrentTemplatePath())##libDirectory#/evernote-api-1.18.jar","#getDirectoryFromPath(getCurrentTemplatePath())##libDirectory#/libthrift.jar"]);  
 			
-			variables.instance.notebook = instance.classLoader.create("com.evernote.edam.type.Notebook").init();
-			
+			if(arguments.notebook neq "" AND arguments.notebook.getClass().getName() eq "com.evernote.edam.type.notebook")
+				variables.instance.notebook = notebook;
+			else
+				variables.instance.notebook = instance.classLoader.create("com.evernote.edam.type.Notebook").init();
+				
 			return this;
 		</cfscript>
 	</cffunction>

@@ -26,4 +26,17 @@
 			assertEquals(expected,actual);
 		</cfscript>
 	</cffunction>
+	
+	<cffunction name="testSetCreated"  returntype="void" access="public" output="false" hint="Test set date created" >
+		<cfscript>
+			var expected = "12/26/1990";
+			var actual = "";
+			
+			variables.note.setDateCreated(expected);
+			
+			actual = variables.note.getDateCreated();
+			
+			assertEquals(expected,actual);
+		</cfscript>
+	</cffunction>
 </cfcomponent>
