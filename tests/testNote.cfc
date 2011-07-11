@@ -5,13 +5,13 @@
 	
 	<cffunction name="setUp" returntype="void" access="public" output="false" hint="" >
 		<cfscript>
-			variables.note = createObject("component","Note").init();
+			variables.note = createObject("component","com.714studios.cfevernote.Note").init("#ExpandPath('../lib')#");
 		</cfscript>
 	</cffunction>
 	
 	<cffunction name="testCreatingNote"  returntype="void" access="public" output="false" hint="" >
 		<cfscript>
-			var expected = "Note";
+			var expected = "com.714studios.cfevernote.Note";
 			var actual = getMetaData(variables.note).name;
 			
 			assertEquals(expected,actual);

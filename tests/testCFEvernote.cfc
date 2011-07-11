@@ -8,7 +8,7 @@
 
 	<cffunction name="setUp" access="public" output="false" returntype="void">
 		<cfscript>
-			variables.cfEvernote = createObject("component","CFEvernote").Init(variables.configArray[1],variables.configArray[2],"sandbox.evernote.com","http://localhost/cfevernote/callback.cfm");
+			variables.cfEvernote = createObject("component","com.714studios.cfevernote.CFEvernote").Init(variables.configArray[1],variables.configArray[2],"sandbox.evernote.com","http://localhost/cfevernote/callback.cfm","#ExpandPath('../lib')#");
 			
 			cfEvernoteStub = createObject("component","CFEvernoteStub");
 			

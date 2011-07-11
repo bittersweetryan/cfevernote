@@ -5,13 +5,13 @@
 	
 	<cffunction name="setUp" returntype="void" access="public" output="false" hint="I setup the notebook test and create a new instance for each test" >
 		<cfscript>
-			variables.notebook = createObject("Component","Notebook").Init();			
+			variables.notebook = createObject("Component","com.714studios.cfevernote.Notebook").Init("#ExpandPath('../lib')#");			
 		</cfscript>	
 	</cffunction>
 	
 	<cffunction name="testNotebookCreatesANewNotebook"  returntype="void" access="public" output="false" hint="I test that the setup method actually creates a new instance of a notebook" >
 		<cfscript>
-			var expected = "Notebook";
+			var expected = "com.714studios.cfevernote.Notebook";
 			var actual = getMetaData(variables.noteBook).name;
 			
 			assertEquals(expected,actual);

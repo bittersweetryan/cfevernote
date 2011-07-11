@@ -83,7 +83,7 @@ THE SOFTWARE.
 		<cfargument name="apiKey" type="string" required="false" default="" />
 		<cfargument name="evernoteHost" type="string" required="false" default="" />
 		<cfargument name="callbackURL" type="string" required="false" default="" />
-		<cfargument name="libDirectory" type="string" required="false" default="lib">
+		<cfargument name="libDirectory" type="string" required="false" default="#getDirectoryFromPath(getCurrentTemplatePath())#/lib">
 		
 		<cfscript>
 			if(arguments.apiKey neq "")
@@ -101,7 +101,7 @@ THE SOFTWARE.
 			if(arguments.callbackURL neq "")
 				instance.oAuth.callbackURL = arguments.callbackURL;
 			
-			instance.classLoader = createObject("component", "JavaLoader").init(["#getDirectoryFromPath(getCurrentTemplatePath())##libDirectory#/CFEvernote.jar","#getDirectoryFromPath(getCurrentTemplatePath())##libDirectory#/evernote-api-1.18.jar","#getDirectoryFromPath(getCurrentTemplatePath())##libDirectory#/libthrift.jar"]);  
+			instance.classLoader = createObject("component", "JavaLoader").init(["#libDirectory#/CFEvernote.jar","#libDirectory#/evernote-api-1.18.jar","#libDirectory#/libthrift.jar"]);  
 			instance.cfEvernote = instance.classLoader.create("com.sudios714.cfevernote.CFEvernote").init(instance.oAuth.evernoteHost, instance.evernote.userAgent);
 					
 			return this;

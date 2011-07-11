@@ -4,10 +4,10 @@
 	</cfscript>
 	
 	<cffunction name="init" returntype="Note" access="public" output="false" hint="I construct the Note object" >
-		<cfargument name="libDirectory" type="string" required="false" default="lib">
+		<cfargument name="libDirectory" type="string" required="false" default="#getDirectoryFromPath(getCurrentTemplatePath())#/lib">
 		<cfargument name="note" type="any" required="false" default="" />
 		<cfscript>
-			instance.classLoader = createObject("component", "JavaLoader").init(["#getDirectoryFromPath(getCurrentTemplatePath())##libDirectory#/CFEvernote.jar","#getDirectoryFromPath(getCurrentTemplatePath())##libDirectory#/evernote-api-1.18.jar","#getDirectoryFromPath(getCurrentTemplatePath())##libDirectory#/libthrift.jar"]);  
+			instance.classLoader = createObject("component", "JavaLoader").init(["#libDirectory#/CFEvernote.jar","#libDirectory#/evernote-api-1.18.jar","#libDirectory#/libthrift.jar"]);  
 	
 			if(arguments.note neq "" AND arguments.note.getClass().getName() eq "com.evernote.edam.type.note")
 				instance.note = arguments.note;
