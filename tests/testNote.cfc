@@ -81,4 +81,29 @@
 			assertEquals(expected,actual);
 		</cfscript>
 	</cffunction>
+	
+	<cffunction name="testSetContentWithHTMLReturnsProperStructure"  returntype="void" access="public" output="false" hint="" >
+		<cfscript>
+			var expected = '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd"><en-note>Hello World</en-note>';
+							
+			var actual = "";
+			
+			variables.note.setContent('<html><head></head><body>Hello World</body></html>');
+			
+			actual = variables.note.getContent();
+			
+			assertEquals(expected,actual);
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testValidateWithValidMarkupReturnsTrue"  returntype="void" access="public" output="false" hint="Testing a private method to make sure it works as planned" >
+		<cfscript>
+			var validENML = '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd"><en-note><b>Hello World</b></en-note>';
+			
+			makePublic(variables.note,"validate");
+			
+			assertTrue(variables.note.validate(validENML));
+		</cfscript>
+	</cffunction>
+	
 </cfcomponent>

@@ -61,13 +61,16 @@
 	</cffunction>
 	
 	<cffunction name="setContent" returntype="void" access="public" output="false" hint="I set this notes content" >
-		<cfargument name="content" type="xml" required="false" default="#getNoteHeader() & getNoteFooter()#" hint="Can be valid html or enml" />	
+		<cfargument name="content" type="string" required="false" default="#getNoteHeader() & getNoteFooter()#" hint="Can be valid html or enml" />	
 		<cfscript>
+			var convertedContent = "";
+			
 			//need to validate the content
-			convertHTML(arguments.content);
 			//validate(arguments.content);  //validate should throw error
 			
-			instance.note.setContent(arguments.content);
+			convertedContent = convertHTML(arguments.content);
+
+			instance.note.setContent(convertedContent);
 		</cfscript>
 	</cffunction>
 	
@@ -76,8 +79,23 @@
 		<cfargument name="content" type="xml" required="true" />
 		<cfscript>
 			var match = reFindNoCase("<body\b[^>]*>(.*?)</body>",arguments.content,0,true);
-			writedump(var=match,abort=true);
-			return ("<xml></xml>");
+			var bodyContent = "";
+			//if we found a body tag only get the stuff between it
+			//TODO: this seems a bit restrictive, i'll prob need a better algorythm here
+			if((arrayLen(match["len"]) eq 2 AND match["len"][2] neq 0) AND (arrayLen(match["pos"]) eq 2 AND match["pos"][2] neq 0)){
+				
+				return getNoteHeader() & mid(arguments.content,match["pos"][2],match["len"][2])	& getNoteFooter();
+			}
+			else{
+				return arguments.content;
+			}
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="validate" returntype="boolean" access="private" output="false" hint="I determin weather this notes content is valid or not" >
+		<cfargument name="content" type="String" required="true" />
+		<cfscript>
+			return false;
 		</cfscript>
 	</cffunction>
 	
