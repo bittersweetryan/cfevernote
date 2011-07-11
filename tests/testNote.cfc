@@ -39,4 +39,22 @@
 			assertEquals(expected,actual);
 		</cfscript>
 	</cffunction>
+	
+	<cffunction name="testGetContent"  returntype="void" access="public" output="false" hint="Test set get content" >
+		<cfscript>
+			var expected = "";
+			var actual = variables.note.getContent();
+			
+			assertEquals(expected,actual);
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testSetContentWithBlankReturnsDefault"  returntype="void" access="public" output="false" hint="" >
+		<cfscript>
+			var expected = "";
+			var actual = "";
+			
+			assertEquals(expected,actual);
+		</cfscript>
+	</cffunction>
 </cfcomponent>

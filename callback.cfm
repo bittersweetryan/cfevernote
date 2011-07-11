@@ -6,7 +6,7 @@
 	
 	if(NOT structKeyExists(session,"cfEvernote") OR isDefined("url.reset")){
 		
-		session.cfEvernote = new CFEvernote(configArray[1],configArray[2],"sandbox.evernote.com","http://localhost/cfevernote/callback.cfm");
+		session.cfEvernote = new com.714studios.cfevernote.CFEvernote(configArray[1],configArray[2],"sandbox.evernote.com","http://localhost/cfevernote/callback.cfm","#getDirectoryFromPath(getCurrentTemplatePath())#/lib");
 		
 		if(NOT session.cfEvernote.authenticateAPIUser()){
 			//this is one way to call get Token credentials, the other would be:session.cfEvernote.getTokenCredentials(url.oauth_Token,url.oauth_verifier);

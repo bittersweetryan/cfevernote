@@ -20,8 +20,8 @@
 	
 	<cffunction name="getDateCreated" returntype="Date" access="public" output="false" hint="I get the date created of this notebook" >
 		<cfscript>
-			if(isNumeric(instance.note.getCreated()))
-				return dateFormat(dateAdd("s",instance.note.getCreated(),DateConvert("utc2Local", "January 1 1970 00:00")),"mm/dd/yyyy");
+			if(isNumeric(instance.note.getCreated()) AND instance.note.getCreated() neq 0)
+				return dateFormat(dateAdd("s",instance.note.getCreated(),DateConvert("utc2Local", "January 1 1970 00:00")),"m/d/yyyy");
 			else
 				return "1/1/1900";
 		</cfscript>
@@ -32,6 +32,29 @@
 		<cfscript>
 			var epoch = dateDiff("s",DateConvert("utc2Local", "January 1 1970 00:00"), arguments.dateCreated);
 			instance.note.setCreated(javaCast("Long",epoch));
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="getContent" returntype="String" access="public" output="false" hint="I get this notes content" >
+		<cfscript>
+			var content = instance.note.getContent();
+			
+			if(isDefined("content"))
+				return content;
+			else
+				return getNoteHeader() & getNoteFooter();
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="getNoteHeader" returntype="String" access="private" output="false" hint="I return a default note header" >
+		<cfscript>
+			return '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd"><en-note>';
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="getNoteFooter" returntype="String" access="private" output="false" hint="I return a default note header" >
+		<cfscript>
+			return "</en-note>";
 		</cfscript>
 	</cffunction>
 </cfcomponent>
