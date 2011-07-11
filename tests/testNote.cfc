@@ -106,4 +106,15 @@
 		</cfscript>
 	</cffunction>
 	
+	<cffunction name="testSetContentWithENMLReturnsValidENML"  returntype="void" access="public" output="false" hint="" >
+		<cfscript>
+			fail("Method not written yet");
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testSetContentWithHTMLWithNoBodyReturnsValidENML"  returntype="void" access="public" output="false" hint="" >
+		<cfscript>
+			fail("Method not written yet");
+		</cfscript>
+	</cffunction>
 </cfcomponent>

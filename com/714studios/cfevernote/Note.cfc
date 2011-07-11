@@ -86,6 +86,7 @@
 				
 				return getNoteHeader() & mid(arguments.content,match["pos"][2],match["len"][2])	& getNoteFooter();
 			}
+			//check for xml and enml tags if not add them
 			else{
 				return arguments.content;
 			}
