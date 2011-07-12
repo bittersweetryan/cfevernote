@@ -64,10 +64,11 @@
 		<cfargument name="content" type="String" required="false" default="#getNoteHeader() & getNoteFooter()#" hint="Can be valid html or enml" />	
 		<cfscript>
 			var convertedContent = "";
-			
-			//need to validate the content
-			//validate(arguments.content);  //validate should throw error
+
 			convertedContent = convertHTML(arguments.content);
+			
+			//need to validate the content beofre setting it
+			validate(convertedContent);
 			
 			instance.note.setContent(convertedContent);
 		</cfscript>
@@ -119,10 +120,15 @@
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="validate" returntype="boolean" access="private" output="false" hint="I determin weather this notes content is valid or not" >
+	<cffunction name="validate" returntype="void" access="private" output="false" hint="I determin weather this notes content is valid or not" >
 		<cfargument name="content" type="String" required="true" />
 		<cfscript>
-			return false;
+			for(key in variables.disallowedTags){
+				
+				if(reFindNoCase("<#variables.disallowedTags[key]#\b[^>]*>(.*?)</#variables.disallowedTags[key]#>",arguments.content)){
+					throw("ENML content exception [#variables.disallowedTags[key]#]","The content passed in contains an illegal tag");
+				}
+			}
 		</cfscript>
 	</cffunction>
 	
@@ -136,5 +142,13 @@
 		<cfscript>
 			return "</en-note>";
 		</cfscript>
+	</cffunction>
+	
+	<cffunction name="throw" returntype="void" access="private" output="false" hint="Used as a proxy for throw for cf versions less than 9" >
+		<cfargument name="type" type="String" required="false" default="" />
+		<cfargument name="message" type="String" required="false" default="" />
+		<cfargument name="detail" type="String" required="false" default="" />
+		
+		<cfthrow type="#arguments.type#" message="#arguments.message#" detail="#arguments.detail#" />
 	</cffunction>
 </cfcomponent>
