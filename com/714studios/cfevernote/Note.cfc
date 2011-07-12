@@ -61,35 +61,61 @@
 	</cffunction>
 	
 	<cffunction name="setContent" returntype="void" access="public" output="false" hint="I set this notes content" >
-		<cfargument name="content" type="string" required="false" default="#getNoteHeader() & getNoteFooter()#" hint="Can be valid html or enml" />	
+		<cfargument name="content" type="String" required="false" default="#getNoteHeader() & getNoteFooter()#" hint="Can be valid html or enml" />	
 		<cfscript>
 			var convertedContent = "";
 			
 			//need to validate the content
 			//validate(arguments.content);  //validate should throw error
-			
 			convertedContent = convertHTML(arguments.content);
-
+			
 			instance.note.setContent(convertedContent);
 		</cfscript>
 	</cffunction>
 	
 	<!--- Private methods --->
-	<cffunction name="convertHTML" returntype="any" access="private" output="false" hint="I search for html and body tags and replace them with enml en-note tags" >
-		<cfargument name="content" type="xml" required="true" />
+	<cffunction name="convertHTML" returntype="xml" access="private" output="false" hint="I search for html and body tags and replace them with enml en-note tags" >
+		<cfargument name="content" type="String" required="true" />
 		<cfscript>
-			var match = reFindNoCase("<body\b[^>]*>(.*?)</body>",arguments.content,0,true);
-			var bodyContent = "";
+			
+			var returnXML = arguments.content;
 			//if we found a body tag only get the stuff between it
 			//TODO: this seems a bit restrictive, i'll prob need a better algorythm here
-			if((arrayLen(match["len"]) eq 2 AND match["len"][2] neq 0) AND (arrayLen(match["pos"]) eq 2 AND match["pos"][2] neq 0)){
-				
+			returnXML = checkForHTMLWithBody(arguments.content);
+			
+			if(NOT len(returnXML)){
+				returnXML = checkForENML(arguments.content);	
+			}
+			
+			if(NOT len(returnXML)){
+				returnXML = arguments.content;	
+			}
+
+			return returnXML;
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="checkForHTMLWithBody" returntype="String" access="private" output="false" hint="I check if content is html with a body tag" >
+		<cfargument name="content" type="String" required="false" default="" />
+		<cfscript>
+			var match = reFindNoCase("<body\b[^>]*>(.*?)</body>",arguments.content,0,true);
+			
+			if((arrayLen(match["len"]) eq 2 AND match["len"][2] neq 0) AND (arrayLen(match["pos"]) eq 2 AND match["pos"][2] neq 0))
 				return getNoteHeader() & mid(arguments.content,match["pos"][2],match["len"][2])	& getNoteFooter();
-			}
-			//check for xml and enml tags if not add them
-			else{
-				return arguments.content;
-			}
+			else
+				return "";
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="checkForENML" returntype="String" access="private" output="false" hint="I check for a string wrapped en enml, if it is not found I wrap the string in enml" >
+		<cfargument name="content" type="String" required="false" default="" />
+		<cfscript>
+			var match = reFindNoCase("<en-note\b[^>]*>(.*?)</en-note>",arguments.content,0,true);
+			
+			if((arrayLen(match["len"]) eq 1 AND match["len"][1] eq 0) AND (arrayLen(match["pos"]) eq 1 AND match["pos"][1] eq 0))
+				return getNoteHeader() & arguments.content & getNoteFooter();
+			else
+				return "";
 		</cfscript>
 	</cffunction>
 	

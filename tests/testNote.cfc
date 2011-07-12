@@ -96,6 +96,19 @@
 		</cfscript>
 	</cffunction>
 	
+	<cffunction name="testSetContentWithHTMLWithNoBodyReturnsValidENML"  returntype="void" access="public" output="false" hint="" >
+		<cfscript>
+			var expected = '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd"><en-note><h1>Header</h1><b>Hello World</b></en-note>';
+			var content = '<h1>Header</h1><b>Hello World</b>';
+			var actual = "";
+			
+			variables.note.setContent(content);
+			actual = variables.note.getContent(0);
+			
+			assertEquals(expected,actual);
+		</cfscript>
+	</cffunction>
+	
 	<cffunction name="testValidateWithValidMarkupReturnsTrue"  returntype="void" access="public" output="false" hint="Testing a private method to make sure it works as planned" >
 		<cfscript>
 			var validENML = '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd"><en-note><b>Hello World</b></en-note>';
@@ -106,15 +119,5 @@
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="testSetContentWithENMLReturnsValidENML"  returntype="void" access="public" output="false" hint="" >
-		<cfscript>
-			fail("Method not written yet");
-		</cfscript>
-	</cffunction>
 	
-	<cffunction name="testSetContentWithHTMLWithNoBodyReturnsValidENML"  returntype="void" access="public" output="false" hint="" >
-		<cfscript>
-			fail("Method not written yet");
-		</cfscript>
-	</cffunction>
 </cfcomponent>
