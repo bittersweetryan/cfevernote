@@ -3,4 +3,11 @@
 Cfevernote is a evernote api wrapper for coldfusion that uses the cfevernote jar and the apache thrift library.  Also included is Mark Mandel's java loader class.
 
 ## Installation
-Copy all contents of "lib" a directory in your application. By default this is "lib", if you choose another directory you can pass in an argument to the constructor called "libDirectory" with its relative location to where this component lives.  Also copy the CFEvernote.cfc and JavaLoade.cfc files to your websites object directory.
+_See usingTheAPI.markdown_
+
+##TODO
+1. Create note attributes class
+2. Add notes
+3. Search notes
+4. Note media
+5. Convert notes to enml?

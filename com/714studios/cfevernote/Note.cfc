@@ -74,7 +74,76 @@
 		</cfscript>
 	</cffunction>
 	
-	<!--- Private methods --->
+	<cffunction name="getGUID" returntype="String" access="public" output="false" hint="I get this notes GUID" >
+		<cfscript>
+			var guid = instance.note.getGUID();
+			
+			if(isDefined("guid"))
+				return guid;
+			else
+				return "";		
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="setGUID" returntype="void" access="public" output="false" hint="I set this notes GUID" >
+		<cfargument name="guid" type="String" required="false" default="" />
+		<cfscript>
+			instance.note.setGUID(arguments.guid);
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="getNotebookGUID" returntype="String" access="public" output="false" hint="I get this notes notebook guid" >
+		<cfscript>
+			var notebookGUID = instance.note.getNotebookGUID();
+			
+			if(isDefined("notebookGUID"))
+				return notebookGUID;
+			else
+				return "";
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="setNotebookGUID" returntype="void" access="public" output="false" hint="I set this notebooks guid" >
+		<cfargument name="notebookGUID" type="String" required="false" default="" />
+		<cfscript>
+			instance.note.setNotebookGUID(arguments.notebookGUID);
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="getTagNames" returntype="Array" access="public" output="false" hint="I return a list of this notes tags" >
+		<cfscript>
+			var retArray = "";
+			
+			retArray = instance.note.getTagNames();
+			
+			if(isDefined("retArray"))
+				return retArray;
+			else
+				return arrayNew(1);
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="setTagNames" returntype="void" access="public" output="false" hint="I set this notes tags" >
+		<cfargument name="tagNames" type="Array" required="false" default="#[]#" />
+		<cfscript>
+			var i = "";
+			
+			for(i = 1; i lte arrayLen(arguments.tagNames); i = i + 1){
+				addTag(arguments.tagNames[i]);
+			}
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="addTag" returntype="void" access="public" output="false" hint="I add a single tag to the tag array" >
+		<cfargument name="tagName" type="String" required="false" default="" />
+		<cfscript>
+			instance.note.addToTagNames(arguments.tagName);	
+		</cfscript>
+	</cffunction>
+	<!----------------------------------- 
+	*	       Private methods          *
+	------------------------------------>
+	
 	<cffunction name="convertHTML" returntype="xml" access="private" output="false" hint="I search for html and body tags and replace them with enml en-note tags" >
 		<cfargument name="content" type="String" required="true" />
 		<cfscript>

@@ -17,7 +17,7 @@ public class CFEvernoteTest {
     
     CFEvernote instance;
     
-    private static final String AUTH_TOKEN = "S=s1:U=ddec:E=1310ed1a7b8:C=13109ab4bb8:P=7:A=bittersweetryan:H=245fd9e94c00b668887c6a3b98dbb426";
+    private static final String AUTH_TOKEN = "S=s1:U=ddec:E=13126782560:C=1312151c960:P=7:A=bittersweetryan:H=b3d7a52b9fdb0d0b80859ab3e98b8583";
     private static final String SHARD = "s1";
     private static final String USER_ID = "56812";
     private static final String EVERNOTE_URL = "sandbox.evernote.com";
@@ -153,7 +153,8 @@ public class CFEvernoteTest {
         
         Notebook notebook = this.instance.getDefaultNotebook();
         System.out.print("GUID" + notebook.getGuid());
-        Class actual = notebook.getClass().getClass();
+        
+        Class actual = notebook.getClass();
         
         assertEquals(expected,actual);
     }
@@ -167,5 +168,10 @@ public class CFEvernoteTest {
         String actual = notebook.getGuid();
         
         assertEquals(expected,actual);
+    }
+    
+    @Test
+    public void testCreateNote() throws Exception{
+        fail("Method not created yet");
     }
 }

@@ -9,10 +9,32 @@
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="testCreatingNote"  returntype="void" access="public" output="false" hint="" >
+	<cffunction name="testCreatingNoteObject"  returntype="void" access="public" output="false" hint="" >
 		<cfscript>
 			var expected = "com.714studios.cfevernote.Note";
 			var actual = getMetaData(variables.note).name;
+			
+			assertEquals(expected,actual);
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testGetGUIDForBlankNote"  returntype="void" access="public" output="false" hint="I test getting the guid" >
+		<cfscript>
+			var expected = ""; 
+			var actual = variables.note.getGUID();
+			
+			assertEquals(expected,actual);
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testSetGUIDForNote"  returntype="void" access="public" output="false" hint="I test setting the GUID" >
+		<cfscript>
+			var expected = "1e345ser";
+			var actual = "";
+			
+			variables.note.setGUID(expected);
+			
+			actual = variables.note.getGUID();
 			
 			assertEquals(expected,actual);
 		</cfscript>
@@ -114,6 +136,62 @@
 			var validENML = '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd"><en-note><b>Hello World</b></en-note>';
 			
 			makePublic(variables.note,"validate");
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testGetNotebookGUIDForBlankNotebook"  returntype="void" access="public" output="false" hint="" >
+		<cfscript>
+			var expected = "";
+			var actual = variables.note.getNotebookGUID();
+			
+			assertEquals(expected,actual);
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testSetNotebookGUID"  returntype="void" access="public" output="false" hint="I test the notebok guid" >
+		<cfscript>
+			var expected = "12fd345e";
+			var actual = "";
+			
+			variables.note.setNotebookGUID(expected);
+			
+			actual = variables.note.getNotebookGUID();
+			
+			assertEquals(expected,actual);
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testGetTagNamesForBlankNote"  returntype="void" access="public" output="false" hint="I test getting tags" >
+		<cfscript>
+			var expected = arrayNew(1);
+			var actual = variables.note.getTagNames();
+			
+			assertEquals(expected,actual);
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testSetTagNamess"  returntype="void" access="public" output="false" hint="I test setting the tag names" >
+		<cfscript>
+			var expected = ["Apple","Banana","Pear","Pineapple"];
+			var actual = "";
+			
+			variables.note.setTagNames(expected);
+			actual = variables.note.getTagNames();
+			
+			assertEquals(expected,actual);
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testAddSingleTagName"  returntype="void" access="public" output="false" hint="I test setting a single tag name" >
+		<cfscript>
+			var expected = ["Apple"];
+			var actual = "";
+			
+			variables.note.addTag("Apple");
+			
+			actual = variables.note.getTagNames();
+			
+			assertEquals(expected,actual);
 		</cfscript>
 	</cffunction>
 </cfcomponent>
