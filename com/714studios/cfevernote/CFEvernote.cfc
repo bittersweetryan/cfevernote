@@ -268,7 +268,12 @@ THE SOFTWARE.
 		</cfscript>
 	</cffunction>
 	
-
+	<cffunction name="addNote" returntype="void" access="public" output="false" hint="I add a note to evernote" >
+		<cfargument name="note" type="com.714studios.cfevernote.Note" required="true" />
+		<cfscript>
+			instance.cfEvernote.addNote(arguments.note.getNote());
+		</cfscript>	
+	</cffunction>
 	<!--------------------------------------------
 	*   	     Mutaters and Accessors          *
 	--------------------------------------------->

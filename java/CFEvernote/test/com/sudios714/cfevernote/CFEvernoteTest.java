@@ -17,7 +17,7 @@ public class CFEvernoteTest {
     
     CFEvernote instance;
     
-    private static final String AUTH_TOKEN = "S=s1:U=ddec:E=13126782560:C=1312151c960:P=7:A=bittersweetryan:H=b3d7a52b9fdb0d0b80859ab3e98b8583";
+    private static final String AUTH_TOKEN = "S=s1:U=ddec:E=1312bb90cba:C=1312692b0ba:P=7:A=bittersweetryan:H=83eb01fc47f3aed23f12375ca8a71bff";
     private static final String SHARD = "s1";
     private static final String USER_ID = "56812";
     private static final String EVERNOTE_URL = "sandbox.evernote.com";

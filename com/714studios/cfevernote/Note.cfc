@@ -22,7 +22,7 @@
 		<cfscript>
 			instance.classLoader = createObject("component", "JavaLoader").init(["#libDirectory#/CFEvernote.jar","#libDirectory#/evernote-api-1.18.jar","#libDirectory#/libthrift.jar"]);  
 	
-			if(arguments.note neq "" AND arguments.note.getClass().getName() eq "com.evernote.edam.type.note")
+			if(arguments.note neq "" AND arguments.note.getClass().getName() eq "com.evernote.edam.type.Note")
 				instance.note = arguments.note;
 			else
 				instance.note = instance.classLoader.create("com.evernote.edam.type.Note").init();	

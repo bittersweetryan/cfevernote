@@ -221,6 +221,12 @@ public class CFEvernote {
         return notes;
     }
     
+    private void createNote(Note note) throws Exception{
+    
+    Note createdNote = noteStore.createNote(authToken, note);
+    String newNoteGuid = createdNote.getGuid();
+  }
+    
     /**
     * Search a user's notes and display the results, I made a design decision to not abstract the details of a search
     * out of the coldfusion component.  This means that a formatted search string is expected
@@ -261,6 +267,7 @@ public class CFEvernote {
         
         return noteList;
     }
+    
     
     private void checkInitialized() throws Exception{
          if(!this.isInitialized()){
