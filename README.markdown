@@ -11,3 +11,4 @@ _See usingTheAPI.markdown_
 3. Search notes
 4. Note media
 5. Convert notes to enml?
+6. Add options for differnt verifcation screens
