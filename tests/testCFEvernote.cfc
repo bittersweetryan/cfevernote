@@ -3,7 +3,8 @@
 		variables.cfEvernote = "";	
 	</cfscript>
 	
-	<cffile action="read" file="#expandPath('/')#config.txt" variable="variables.filecontents" />
+	<cffile action="read" file="#expandPath('/example')#/config.txt" variable="variables.filecontents" />
+	
 	<cfset variables.configArray = listToArray(variables.filecontents)/>
 
 	<cffunction name="setUp" access="public" output="false" returntype="void">

@@ -20,7 +20,7 @@
 		<cfargument name="libDirectory" type="string" required="false" default="#getDirectoryFromPath(getCurrentTemplatePath())#/lib">
 		<cfargument name="note" type="any" required="false" default="" />
 		<cfscript>
-			instance.classLoader = createObject("component", "JavaLoader").init(["#libDirectory#/CFEvernote.jar","#libDirectory#/evernote-api-1.18.jar","#libDirectory#/libthrift.jar"]);  
+			instance.classLoader = createObject("component", "resources.JavaLoader").init(["#libDirectory#/CFEvernote.jar","#libDirectory#/evernote-api-1.18.jar","#libDirectory#/libthrift.jar"]);  
 	
 			if(arguments.note neq "" AND arguments.note.getClass().getName() eq "com.evernote.edam.type.Note")
 				instance.note = arguments.note;
