@@ -259,7 +259,7 @@ THE SOFTWARE.
 	</cffunction>
 	
 	<cffunction name="getNotes" returntype="Array" access="public" output="false" hint="I return a list of a users notebooks" >
-		<cfargument name="maxCount" type="numeric" required="false" default="9999" hint="The maximum number of notes to get" />
+		<cfargument name="maxCount" type="numeric" required="false" default="0" hint="The maximum number of notes to get" />
 		<cfscript>
 			if(arguments.maxCount)
 				return instance.cfEvernote.listNotes(maxCount);
@@ -268,10 +268,13 @@ THE SOFTWARE.
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="addNote" returntype="void" access="public" output="false" hint="I add a note to evernote" >
+	<cffunction name="addNote" returntype="com.714studios.cfevernote.Note" access="public" output="false" hint="I add a note to evernote" >
 		<cfargument name="note" type="com.714studios.cfevernote.Note" required="true" />
 		<cfscript>
-			instance.cfEvernote.addNote(arguments.note.getNote());
+			var javaNote = instance.cfEvernote.createNote(arguments.note.getNote());
+			arguments.note.setNote(javaNote);
+			
+			return arguments.note;
 		</cfscript>	
 	</cffunction>
 	<!--------------------------------------------

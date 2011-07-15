@@ -221,10 +221,12 @@ public class CFEvernote {
         return notes;
     }
     
-    private void createNote(Note note) throws Exception{
+    public Note createNote(Note note) throws Exception{
     
     Note createdNote = noteStore.createNote(authToken, note);
     String newNoteGuid = createdNote.getGuid();
+    
+    return createdNote;
   }
     
     /**

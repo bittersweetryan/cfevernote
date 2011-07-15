@@ -140,6 +140,7 @@
 			instance.note.addToTagNames(arguments.tagName);	
 		</cfscript>
 	</cffunction>
+	
 	<!----------------------------------- 
 	*	       Private methods          *
 	------------------------------------>
@@ -210,6 +211,19 @@
 	<cffunction name="getNoteFooter" returntype="String" access="private" output="false" hint="I return a default note header" >
 		<cfscript>
 			return "</en-note>";
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="getNote" returntype="any" access="public" output="false" hint="I set this components evernote java note object" >
+		<cfscript>
+			return instance.note;
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="setNote" returntype="void" access="public" output="false" hint="I return this components evernote java note object" >
+		<cfargument name="note" type="any" required="true" />
+		<cfscript>
+			instance.note = arguments.note;
 		</cfscript>
 	</cffunction>
 	

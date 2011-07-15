@@ -1,6 +1,9 @@
 <cfcomponent name="testCFEvernote.cfc" extends="mxunit.framework.TestCase">
 	<cfscript>
 		variables.cfEvernote = "";	
+		
+		variables.classLoader = createObject("component", "resources.JavaLoader").init(["#expandPath('../lib/mockito-all-1.8.5.jar')#","#expandPath('../lib/CFEvernote.jar')#","#expandPath('../lib/libthrift.jar')#","#expandPath('../lib/evernote-api-1.18.jar')#"]);  
+		variables.mockito = variables.classLoader.create("org.mockito.Mockito").init();
 	</cfscript>
 	
 	<cffile action="read" file="#expandPath('/example')#/config.txt" variable="variables.filecontents" />
@@ -11,9 +14,9 @@
 		<cfscript>
 			variables.cfEvernote = createObject("component","com.714studios.cfevernote.CFEvernote").Init(variables.configArray[1],variables.configArray[2],"sandbox.evernote.com","http://localhost/cfevernote/callback.cfm","#ExpandPath('../lib')#");
 			
-			cfEvernoteStub = createObject("component","CFEvernoteStub");
+			variables.mockCFEvernote = variables.mockito.mock(variables.classLoader.create("com.sudios714.cfevernote.CFEvernote").init("123","S1","232","sandbox.evernote.com","mock").getClass());
 			
-			variables.cfEvernote.setCFEvernote(cfEvernoteStub);
+			variables.cfEvernote.setCFEvernote(mockCFEvernote);
 		</cfscript>		
 	</cffunction>
 	
@@ -189,9 +192,21 @@
 	
 	<cffunction name="testGetNotebooksWithNoParamReturnsArrayOf9999"  returntype="void" access="public" output="false" hint="I test that the get notebooks method returns an array of notebooks" >
 		<cfscript>
-			var notes = variables.cfEvernote.getNotebooks();
+			var notebooks = ""; 
 			var expected = 9999;
-			var actual = arrayLen(notes);
+			var i = 0;
+			var retArray = createObject("Java","java.util.ArrayList");
+			var actual = "";
+			
+			for(i = 1; i lte 9999; i = i + 1){
+				retArray.Add("");
+			}
+			
+			variables.mockito.when(mockCFEvernote.listNotebooks()).thenReturn(retArray);
+			
+			notebooks = variables.cfEvernote.getNotebooks(); 
+			
+			actual = arrayLen(notebooks);
 			
 			assertEquals(expected,actual);
 		</cfscript>
@@ -199,19 +214,45 @@
 	
 	<cffunction name="testGetNotebooksWithMaxNotesReturnsArrayOfThatSize"  returntype="void" access="public" output="false" hint="I test that the get notebooks method returns an array of notebooks" >
 		<cfscript>
-			var notes = variables.cfEvernote.getNotebooks(10);
-			var expected = 10;
-			var actual = arrayLen(notes);
+			var notebooks = ""; 
+			var expected = 12;
+			var i = 0;
+			var retArray = createObject("Java","java.util.ArrayList");
+			var actual = "";
+			
+			for(i = 1; i lte 12; i = i + 1){
+				retArray.Add("");
+			}
+			
+			variables.mockito.when(mockCFEvernote.listNotebooks(12)).thenReturn(retArray);
+			
+			notebooks = variables.cfEvernote.getNotebooks(12); 
+			
+			actual = arrayLen(notebooks);
 			
 			assertEquals(expected,actual);
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="testGetNotesWithNoParamReturnsArrayOf9999"  returntype="void" access="public" output="false" hint="I test that the get notebooks method returns an array of notebooks" >
+	<cffunction name="testGetNotesWithNoParamReturnsArrayOf100"  returntype="void" access="public" output="false" hint="I test that the get notebooks method returns an array of notebooks" >
 		<cfscript>
-			var notes = variables.cfEvernote.getNotes();
-			var expected = 9999;
-			var actual = arrayLen(notes);
+			var notes = ""; 
+			var expected = 100;
+			var i = 0;
+			var retArray = createObject("Java","java.util.ArrayList");
+			var actual = "";
+			
+			for(i = 1; i lte 100; i = i + 1){
+				retArray.Add("#i#");
+			}
+			
+			variables.mockito.when(mockCFEvernote.listNotes()).thenReturn(retArray);
+			
+			variables.cfEvernote.setCFEvernote(mockCFEvernote);
+			
+			notes = variables.cfEvernote.getNotes(); 	
+			
+			actual = arrayLen(notes);
 			
 			assertEquals(expected,actual);
 		</cfscript>
@@ -219,11 +260,53 @@
 	
 	<cffunction name="testGetNotesWithMaxNotesReturnsArrayOfThatSize"  returntype="void" access="public" output="false" hint="I test that the get notebooks method returns an array of notebooks" >
 		<cfscript>
-			var notes = variables.cfEvernote.getNotes(12);
-			var expected = 12;
-			var actual = arrayLen(notes);
+			var notes = ""; 
+			var expected = 15;
+			var i = 0;
+			var retArray = createObject("Java","java.util.ArrayList");
+			var actual = "";
+			
+			for(i = 1; i lte 15; i = i + 1){
+				retArray.Add("");
+			}
+			
+			variables.mockito.when(mockCFEvernote.listNotes(15)).thenReturn(retArray);
+			
+			notes = variables.cfEvernote.getNotes(15); 
+			actual = arrayLen(notes);
 			
 			assertEquals(expected,actual);
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testCreateNoteShouldReturnANoteObject"  returntype="void" access="public" output="false" hint="I test creating a note" >
+		<cfscript>
+			var expected = "";
+			var actual = "";
+			//mock java note object, gets returned by cfevernote java object when a new note is created
+			var mockNote = variables.mockito.mock(variables.classLoader.create("com.evernote.edam.type.Note").getClass());
+			var content = "Test Note";
+			//mock coldfusion note, gets returned by cfevernote coldfusion object when a note is created
+			var note = mock(createObject("component","com.714studios.cfevernote.Note"));
+						
+			mockito.when(mockCFEvernote.createNote(mockNote)).thenReturn(mockNote);
+			
+			note.getNote().returns(mockNote);
+			
+			expected = note;
+			
+			actual = variables.cfEvernote.addNote(note);
+			
+			assertSame(expected,actual);
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testCreateNoteShouldReturnTheProperContent"  returntype="void" access="public" output="false" hint="I test creating a note returns the correct content" >
+		<cfscript>
+			var expected = "";
+			var actual = "";
+			
+			fail("test not yet written");
 		</cfscript>
 	</cffunction>
 </cfcomponent>

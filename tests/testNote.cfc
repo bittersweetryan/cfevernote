@@ -194,4 +194,27 @@
 			assertEquals(expected,actual);
 		</cfscript>
 	</cffunction>
+	
+	<cffunction name="testGetNote"  returntype="void" access="public" output="false" hint="I test getting a note object from cfevernote" >
+		<cfscript>
+			var expected = "com.evernote.edam.type.Note";
+			var actual = variables.note.getNote().getClass().getName();
+			
+			assertEquals(expected,actual);
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testSetNote"  returntype="void" access="public" output="false" hint="I test setting a note ojbect form cfevenote" >
+		<cfscript>
+			var mock = mock(createObject("component","com.714studios.cfevernote.Note"));
+			var expected = mock;
+			var actual = "";
+			
+			variables.note.setNote(mock);
+			
+			actual = variables.note.getNote();
+
+			assertSame(expected,actual);
+		</cfscript>
+	</cffunction>
 </cfcomponent>
