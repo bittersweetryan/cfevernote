@@ -133,8 +133,8 @@ Purpose:    Utlitity class for loading Java Classes
 		var classLoader = 0;
 		var networkClassLoaderClass = 0;
 		var networkClassLoaderProxy = 0;
-
-		networkClassLoaderClass = getServerURLClassLoader().loadClass("com.compoundtheory.classloader.NetworkClassLoader");
+		
+		networkClassLoaderClass = getServerURLClassLoader().loadClass("com.compoundtheory.classloader.NetworkClassLoader");	
 
 		networkClassLoaderProxy = createJavaProxy(networkClassLoaderClass);
 

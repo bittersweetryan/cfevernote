@@ -2,7 +2,7 @@
 	<cfscript>
 		variables.cfEvernote = "";	
 		
-		variables.classLoader = createObject("component", "resources.JavaLoader").init(["#expandPath('../lib/mockito-all-1.8.5.jar')#","#expandPath('../lib/CFEvernote.jar')#","#expandPath('../lib/libthrift.jar')#","#expandPath('../lib/evernote-api-1.18.jar')#"]);  
+		variables.classLoader = createObject("component", "JavaLoader").init(["#expandPath('../lib/mockito-all-1.8.5.jar')#","#expandPath('../lib/CFEvernote.jar')#","#expandPath('../lib/libthrift.jar')#","#expandPath('../lib/evernote-api-1.18.jar')#"]);  
 		variables.mockito = variables.classLoader.create("org.mockito.Mockito").init();
 	</cfscript>
 	

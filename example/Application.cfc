@@ -1,10 +1,10 @@
 <cfcomponent>
 	<cfscript>
 		this.seperator = "";
-		this.name = "cfevernote"; 
+		this.name = "cfevernote example"; 
 		
 		this.seperator = createObject("java","java.lang.System").getProperty("file.separator");
-		this.mappings["/"] = expandpath(".") & this.seperator;
+		this.mappings["/"] = expandpath("..") & this.seperator;
 		this.mappings["/com"] = expandpath("../com") & this.seperator;
 		this.mappings["/resources"] = expandpath("../resources") & this.seperator;
 		this.mappings["/lib"] = expandpath("../lib") & this.seperator;
