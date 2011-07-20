@@ -25,6 +25,8 @@ THE SOFTWARE.
 		//instance scope
 		variables.instance = structNew();
 		
+		variables.instance.libDir = "";
+		
 		//oauth information
 		variables.instance.oAuth = structNew();
 		
@@ -83,7 +85,7 @@ THE SOFTWARE.
 		<cfargument name="apiKey" type="string" required="false" default="" />
 		<cfargument name="evernoteHost" type="string" required="false" default="" />
 		<cfargument name="callbackURL" type="string" required="false" default="" />
-		<cfargument name="libDirectory" type="string" required="false" default="#getDirectoryFromPath(getCurrentTemplatePath())#/lib">
+		<cfargument name="libDir" type="string" required="false" default="#getDirectoryFromPath(getCurrentTemplatePath())#/lib">
 		
 		<cfscript>
 			if(arguments.apiKey neq "")
@@ -101,8 +103,10 @@ THE SOFTWARE.
 			if(arguments.callbackURL neq "")
 				instance.oAuth.callbackURL = arguments.callbackURL;
 			
-			instance.classLoader = createObject("component", "JavaLoader").init(["#libDirectory#/CFEvernote.jar","#libDirectory#/evernote-api-1.18.jar","#libDirectory#/libthrift.jar"]);  
+			instance.classLoader = createObject("component", "JavaLoader").init(["#libDir#/CFEvernote.jar","#libDir#/evernote-api-1.18.jar","#libDir#/libthrift.jar"]);  
 			instance.cfEvernote = instance.classLoader.create("com.sudios714.cfevernote.CFEvernote").init(instance.oAuth.evernoteHost, instance.evernote.userAgent);
+			
+			instance.libDir = arguments.libDir;
 					
 			return this;
 		</cfscript>
@@ -238,10 +242,24 @@ THE SOFTWARE.
 	<cffunction name="getNotebooks" returntype="Array" access="public" output="false" hint="I return a list of a users notebooks" >
 		<cfargument name="maxCount" type="numeric" hint="The maximum number of notebooks to get" default="0" />
 		<cfscript>
-			if(arguments.maxCount)
-				return instance.cfEvernote.listNotebooks(arguments.maxCount);
-			else
-				return instance.cfEvernote.listNotebooks();
+			var notebooks = "";
+			var retNotebooks = arrayNew(1);
+			var = i = 0;
+			
+			if(arguments.maxCount){
+				notebooks = instance.cfEvernote.listNotebooks(arguments.maxCount);
+			}
+			else{
+				notebooks = instance.cfEvernote.listNotebooks();
+			}
+							
+			for(i = 0; i lt notebooks.size(); i = i+1){
+				retNotebooks[i+1] = createObject("component","com.714studios.cfevernote.notebook").init(instance.libDir,notebooks.get(i));
+			}
+
+			notebooks = "";
+			
+			return retNotebooks;
 		</cfscript>
 	</cffunction>
 	

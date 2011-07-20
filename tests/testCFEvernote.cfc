@@ -4,6 +4,7 @@
 		
 		variables.classLoader = createObject("component", "JavaLoader").init(["#expandPath('../lib/mockito-all-1.8.5.jar')#","#expandPath('../lib/CFEvernote.jar')#","#expandPath('../lib/libthrift.jar')#","#expandPath('../lib/evernote-api-1.18.jar')#"]);  
 		variables.mockito = variables.classLoader.create("org.mockito.Mockito").init();
+		variables.libDir = ExpandPath('../lib');
 	</cfscript>
 	
 	<cffile action="read" file="#expandPath('/example')#/config.txt" variable="variables.filecontents" />
@@ -12,7 +13,7 @@
 
 	<cffunction name="setUp" access="public" output="false" returntype="void">
 		<cfscript>
-			variables.cfEvernote = createObject("component","com.714studios.cfevernote.CFEvernote").Init(variables.configArray[1],variables.configArray[2],"sandbox.evernote.com","http://localhost/cfevernote/callback.cfm","#ExpandPath('../lib')#");
+			variables.cfEvernote = createObject("component","com.714studios.cfevernote.CFEvernote").Init(variables.configArray[1],variables.configArray[2],"sandbox.evernote.com","http://localhost/cfevernote/callback.cfm","#variables.libDir#");
 			
 			variables.mockCFEvernote = variables.mockito.mock(variables.classLoader.create("com.sudios714.cfevernote.CFEvernote").init("123","S1","232","sandbox.evernote.com","mock").getClass());
 			
@@ -199,6 +200,7 @@
 			var actual = "";
 			
 			for(i = 1; i lte 9999; i = i + 1){
+				
 				retArray.Add("");
 			}
 			
@@ -224,13 +226,25 @@
 				retArray.Add("");
 			}
 			
-			variables.mockito.when(mockCFEvernote.listNotebooks(12)).thenReturn(retArray);
+			//variables.mockito.when(mockCFEvernote.listNotebooks(12)).thenReturn(retArray);
 			
 			notebooks = variables.cfEvernote.getNotebooks(12); 
 			
 			actual = arrayLen(notebooks);
 			
 			assertEquals(expected,actual);
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testGetNotebookReturnsProperNotebook"  returntype="void" access="public" output="false" hint="I make sure that getting a notebook via guid returns the proper notebook" >
+		<cfscript>
+			fail("method not written");
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testGetNotesForNotebookReturnsNotes"  returntype="void" access="public" output="false" hint="I test getting notes for a notebook returns a list of notes for that notebook" >
+		<cfscript>
+			fail("method not written");
 		</cfscript>
 	</cffunction>
 	
@@ -303,9 +317,6 @@
 	
 	<cffunction name="testCreateNoteShouldReturnTheProperContent"  returntype="void" access="public" output="false" hint="I test creating a note returns the correct content" >
 		<cfscript>
-			var expected = "";
-			var actual = "";
-			
 			fail("test not yet written");
 		</cfscript>
 	</cffunction>

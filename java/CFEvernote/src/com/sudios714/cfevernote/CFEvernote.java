@@ -224,7 +224,6 @@ public class CFEvernote {
     public Note createNote(Note note) throws Exception{
     
     Note createdNote = noteStore.createNote(authToken, note);
-    String newNoteGuid = createdNote.getGuid();
     
     return createdNote;
   }

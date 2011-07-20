@@ -1,5 +1,6 @@
-	<cffile action="read" file="#expandPath('/')#example/config.txt" variable="variables.filecontents" />
-	<cfset configArray = listToArray(variables.filecontents)/>
+<cffile action="read" file="#expandPath('/')#example/config.txt" variable="variables.filecontents" />
+<cfset configArray = listToArray(variables.filecontents)/>
+<cfparam name="action" default="" />
 <cfscript>
 	//its best to persist this object somewhere since the oauth process will require saving state
 	
@@ -22,20 +23,32 @@
 		session.cfEvernote.getTokenCredentials();
 	}
 	
-	if(isDefined("url.method")){
-		method = url.method;
-		
-		switch(method){
-			case "createNote":
-			{
-				//to create a note first create a note object
-				note = createObject("component","com.714.cfevernote.note");
-				//then set its content
-				note.setContent(form.content);
-				//lastly add the note to evernote using the cfevernote
-				session.cfEvernote.createNote(note);
-				break;
-			}
+	switch(action){
+		case "createNote":
+		{
+			//to create a note first create a note object, and pass in the lib directory where the evernote jars
+			note = createObject("component","com.714studios.cfevernote.note").init("#ExpandPath('../')#/lib");
+			//then set its content
+			note.setContent(form.content);
+			//lastly add the note to evernote using the cfevernote
+			note = session.cfEvernote.addNote(note);
+			
+			writedump(var=note.getGUID());
+			writedump(var=note,abort=true);
+			
+			break;
+		}
+		case "getNotebooks":
+		{
+			notebooks = session.cfEvernote.getNotebooks();
+			writedump(var=getMetaData(notebooks[1]));
+			writedump(var=session.cfEvernote.getNotebooks());
+			break;
+		}
+		case "getNotes":
+		{
+			writedump(var=session.cfEvernote.getNotes());
+			break;
 		}
 	}
 </cfscript>
@@ -73,29 +86,26 @@
 			<li>
 				<a href="index.cfm?reset=true">Reset Evernote credentials</a>
 			<li>
-				<a href="index.cfm?method=getNotebooks">Get Notebooks</a>
+				<a href="index.cfm?action=getNotebooks">Get Notebooks</a>
 			</li>
 			<li>
-				<a href="index.cfm?method=getNotes">Get Notes</a>
+				<a href="index.cfm?action=getNotes">Get Notes</a>
 			</li>
 		</ul>
 	</div>
 	
 	<div id="createNote">
 		<h2>Create Note</h2>
-		<form action="index.cfm" method="post">
+		<form action="index.cfm?action=createNote" method="post">
 			<textarea name="content" id="content" rows="4" cols="30"></textarea>
-			<input type="hidden" name="method" value="createNote" id="method">
 			<input type="submit" value="create note" />
 		</form>
 	</div>
 	
 	<cfif isDefined("url.method") AND url.method eq "getNotebooks">
-		<cfset notebooks = session.cfEvernote.getNotebooks() />
-		<cfdump var="#getMetaData(notebooks[1])#" />
-		<cfdump var="#session.cfEvernote.getNotebooks()#">
+		
 	<cfelseif isDefined("url.method") AND url.method eq "getNotes">
-		<cfdump var="#session.cfEvernote.getNotes()#">
+		
 	</cfif>
 </cfoutput>
 </body>
