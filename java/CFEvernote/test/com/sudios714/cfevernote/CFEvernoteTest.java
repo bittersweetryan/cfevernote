@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import org.mockito.AdditionalMatchers;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
@@ -25,7 +26,7 @@ public class CFEvernoteTest {
     CFEvernote instance;
     
     
-    private static final String AUTH_TOKEN = "S=s1:U=ddec:E=1314ad8fcdb:C=13145b2a0db:P=7:A=bittersweetryan:H=211714ad70042ee026f6be18f6027de1";
+    private static final String AUTH_TOKEN = "S=s1:U=ddec:E=13151d0f8ed:C=1314caa9ced:P=7:A=bittersweetryan:H=8ad12f28740ed0add133bca99452b4df";
     private static final String SHARD = "s1";
     private static final String USER_ID = "56812";
     private static final String EVERNOTE_URL = "sandbox.evernote.com";
@@ -182,7 +183,7 @@ public class CFEvernoteTest {
     
    
     @Test
-    public void testCreateNote() throws Exception{
+    public void testCreateNoteByPassingInNoteObject() throws Exception{
         
         Note mockNote = mock(Note.class);
         NoteStore.Client mockClient = mock(NoteStore.Client.class);
@@ -197,5 +198,14 @@ public class CFEvernoteTest {
         
         //make sure that cfevernote got called
         verify(mockClient).createNote(AUTH_TOKEN, mockNote);
+    }
+    
+    @Test
+    public void testCreateNoteByPassingInContentCreatesNote() throws Exception{
+        String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE en-note SYSTEM \"http://xml.evernote.com/pub/enml2.dtd\"><en-note><b>Hello World</b></en-note>";
+       
+        Note createdNote = instance.createNote("<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE en-note SYSTEM \"http://xml.evernote.com/pub/enml2.dtd\"><en-note><b>Hello World</b></en-note>");
+        
+        assertEquals(expected,createdNote.getContent());
     }
 }

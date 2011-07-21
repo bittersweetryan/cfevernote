@@ -222,10 +222,17 @@ public class CFEvernote {
     
     public Note createNote(Note note) throws Exception{
     
-    Note createdNote = noteStore.createNote(authToken, note);
+        Note createdNote = noteStore.createNote(authToken, note);
     
-    return createdNote;
-  }
+        return createdNote;
+    }
+    
+    public Note createNote(String content) throws Exception{
+        Note note = new Note();
+        note.setContent(content);
+        
+        return createNote(note);  
+    }
     
     /**
     * Search a user's notes and display the results, I made a design decision to not abstract the details of a search

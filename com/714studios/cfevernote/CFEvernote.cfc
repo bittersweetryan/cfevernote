@@ -295,7 +295,7 @@ THE SOFTWARE.
 	<cffunction name="addNote" returntype="com.714studios.cfevernote.Note" access="public" output="false" hint="I add a note to evernote" >
 		<cfargument name="note" type="com.714studios.cfevernote.Note" required="true" />
 		<cfscript>
-			var javaNote = instance.cfEvernote.createNote(arguments.note.getNote());
+			var javaNote = instance.cfEvernote.createNote(javaCast("String",arguments.note.getContent()));
 			arguments.note.setNote(javaNote);
 			
 			return arguments.note;

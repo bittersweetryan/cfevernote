@@ -2,14 +2,12 @@
 <cfset configArray = listToArray(variables.filecontents)/>
 <cfparam name="action" default="" />
 <cfscript>
-	//its best to persist this object somewhere since the oauth process will require saving state
-	
+	//its best to persist the cfevernote object in a scope since the oauth process will requires some state
 	if(NOT structKeyExists(session,"cfEvernote") OR isDefined("url.reset")){
 		
 		session.cfEvernote = new com.714studios.cfevernote.CFEvernote(configArray[1],configArray[2],"sandbox.evernote.com","http://localhost/cfevernote/example/index.cfm","#ExpandPath('../')#/lib");
-		
+		//call the authenticateAPIUser, this will give you your temporaty credentials that you'll pass into evernote when the user verifies access
 		if(NOT session.cfEvernote.authenticateAPIUser()){
-			//this is one way to call get Token credentials, the other would be:session.cfEvernote.getTokenCredentials(url.oauth_Token,url.oauth_verifier);
 			writeDump(var="API Key and Username were not authenticated by evernote",abort=true);
 		}
 	}
@@ -84,7 +82,7 @@
 		<h2>Evernote Actions</h2>
 		<ul>
 			<li>
-				<a href="index.cfm?reset=true">Reset Evernote credentials</a>
+				<a href="index.cfm?reset=true">Reset Session Evernote Object (clears credentials)</a>
 			<li>
 				<a href="index.cfm?action=getNotebooks">Get Notebooks</a>
 			</li>

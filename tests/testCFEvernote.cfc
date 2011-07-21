@@ -315,14 +315,18 @@
 		<cfscript>
 			var expected = "";
 			var actual = "";
+			
+			var content = '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd"><en-note><b>Hello World</b></en-note>';
+			
 			//mock java note object, gets returned by cfevernote java object when a new note is created
 			var mockNote = variables.mockito.mock(variables.classLoader.create("com.evernote.edam.type.Note").getClass());
-			var content = "Test Note";
+			mockito.when(mockNote.getContent()).thenReturn('<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd"><en-note><b>Hello World</b></en-note>');
+			mockito.when(mockCFEvernote.createNote(content)).thenReturn(mockNote);
+
 			//mock coldfusion note, gets returned by cfevernote coldfusion object when a note is created
 			var note = mock(createObject("component","com.714studios.cfevernote.Note"));
-						
-			mockito.when(mockCFEvernote.createNote(mockNote)).thenReturn(mockNote);
-			
+			note.getContent().returns(content);
+
 			note.getNote().returns(mockNote);
 			
 			expected = note;
