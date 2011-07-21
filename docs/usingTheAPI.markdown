@@ -1,5 +1,12 @@
 ## Installation
-Copy all contents of "lib" a directory in your application. By default this is "lib", if you choose another directory you can pass in an argument to the constructor called "libDirectory" with its relative location to where this component lives.
+
+###Requirements
+
+*Evernote API account. Get one [Here](http://www.evernote.com/about/developer/api/)
+*Adobe ColdFusion 6.1 or newer, Railo 3 or newer (needs verification), OpenBD (needs version and verification)
+*The ability to instantiate Java objects on your ColdFusion server (some shared hosting environments do not allow this)
+
+Copy all contents of "lib" a directory in your application. By default this is "lib", if you choose anothr directory you can pass in an argument to the constructor called "libDirectory" with its relative location to where this component lives.
 
 ## Creating an instance of the Evernote object
 
@@ -18,3 +25,4 @@ Once you have the component you must first authenticate your api account by call
 method.  This method retuns a boolean value, true if your api credentials generated a temoprary auth token or false if there was a problem.  Once you have your temproary token the user will need to authorize your api account to access their account.  Do do this create a link that calls the
 	getEvernoteOAuthVerifyURL()
 method which will send evernote your temporary auth token and will generate your evernote credentials for use.   
+

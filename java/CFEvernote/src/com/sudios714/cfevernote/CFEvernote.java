@@ -116,7 +116,7 @@ public class CFEvernote {
         
         TBinaryProtocol userStoreProt = new TBinaryProtocol(userStoreTrans);
         
-        userStore = new UserStore.Client(userStoreProt, userStoreProt);
+        setUserStore(new UserStore.Client(userStoreProt, userStoreProt));
 
         // Check that we can talk to the server
         boolean versionOk = userStore.checkVersion(this.userAgent, VERSION_MAJOR, VERSION_MINOR);
@@ -133,7 +133,7 @@ public class CFEvernote {
         
         TBinaryProtocol noteStoreProt = new TBinaryProtocol(noteStoreTrans);
         
-        this.noteStore = new NoteStore.Client(noteStoreProt, noteStoreProt);
+        this.setNoteStore(new NoteStore.Client(noteStoreProt, noteStoreProt));
 
         return true;
     }
@@ -173,7 +173,6 @@ public class CFEvernote {
     public Notebook getNotebook(String guid) throws Exception{
         
         this.checkInitialized();
-
         
         return noteStore.getNotebook(authToken, guid);
     }
@@ -377,5 +376,19 @@ public class CFEvernote {
      */
     public void setInitialized(boolean initialized) {
         this.initialized = initialized;
+    }
+
+    /**
+     * @param noteStore the noteStore to set
+     */
+    public void setNoteStore(NoteStore.Client noteStore) {
+        this.noteStore = noteStore;
+    }
+
+    /**
+     * @param userStore the userStore to set
+     */
+    public void setUserStore(UserStore.Client userStore) {
+        this.userStore = userStore;
     }
 }

@@ -244,7 +244,7 @@ THE SOFTWARE.
 		<cfscript>
 			var notebooks = "";
 			var retNotebooks = arrayNew(1);
-			var = i = 0;
+			var i = 0;
 			
 			if(arguments.maxCount){
 				notebooks = instance.cfEvernote.listNotebooks(arguments.maxCount);
@@ -255,6 +255,7 @@ THE SOFTWARE.
 							
 			for(i = 0; i lt notebooks.size(); i = i+1){
 				retNotebooks[i+1] = createObject("component","com.714studios.cfevernote.notebook").init(instance.libDir,notebooks.get(i));
+				writedump(var=i,output="console");
 			}
 
 			notebooks = "";

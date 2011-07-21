@@ -5,6 +5,11 @@
 		variables.classLoader = createObject("component", "JavaLoader").init(["#expandPath('../lib/mockito-all-1.8.5.jar')#","#expandPath('../lib/CFEvernote.jar')#","#expandPath('../lib/libthrift.jar')#","#expandPath('../lib/evernote-api-1.18.jar')#"]);  
 		variables.mockito = variables.classLoader.create("org.mockito.Mockito").init();
 		variables.libDir = ExpandPath('../lib');
+		
+		//java mock objects
+		variables.mockCFEvernote = variables.mockito.mock(variables.classLoader.create("com.sudios714.cfevernote.CFEvernote").init("123","S1","232","sandbox.evernote.com","mock").getClass());		
+		variables.mockNote = variables.mockito.mock(variables.classLoader.create("com.evernote.edam.type.Note").init().getClass());		
+		variables.mockNotebook = variables.mockito.mock(variables.classLoader.create("com.evernote.edam.type.Notebook").init().getClass());
 	</cfscript>
 	
 	<cffile action="read" file="#expandPath('/example')#/config.txt" variable="variables.filecontents" />
@@ -14,8 +19,6 @@
 	<cffunction name="setUp" access="public" output="false" returntype="void">
 		<cfscript>
 			variables.cfEvernote = createObject("component","com.714studios.cfevernote.CFEvernote").Init(variables.configArray[1],variables.configArray[2],"sandbox.evernote.com","http://localhost/cfevernote/callback.cfm","#variables.libDir#");
-			
-			variables.mockCFEvernote = variables.mockito.mock(variables.classLoader.create("com.sudios714.cfevernote.CFEvernote").init("123","S1","232","sandbox.evernote.com","mock").getClass());
 			
 			variables.cfEvernote.setCFEvernote(mockCFEvernote);
 		</cfscript>		
@@ -191,17 +194,18 @@
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="testGetNotebooksWithNoParamReturnsArrayOf9999"  returntype="void" access="public" output="false" hint="I test that the get notebooks method returns an array of notebooks" >
+	<cffunction name="testGetNotebooksWithNoParamReturnsArrayOf100"  returntype="void" access="public" output="false" hint="I test that the get notebooks method returns an array of notebooks" >
 		<cfscript>
 			var notebooks = ""; 
-			var expected = 9999;
+			var expected = 100;
 			var i = 0;
 			var retArray = createObject("Java","java.util.ArrayList");
 			var actual = "";
+			var tempNote = "";
 			
-			for(i = 1; i lte 9999; i = i + 1){
-				
-				retArray.Add("");
+			for(i = 1; i lte 100; i = i + 1){
+				tempNote = duplicate(variables.mockNote);
+				retArray.Add(tempNote);
 			}
 			
 			variables.mockito.when(mockCFEvernote.listNotebooks()).thenReturn(retArray);
@@ -213,7 +217,7 @@
 			assertEquals(expected,actual);
 		</cfscript>
 	</cffunction>
-	
+
 	<cffunction name="testGetNotebooksWithMaxNotesReturnsArrayOfThatSize"  returntype="void" access="public" output="false" hint="I test that the get notebooks method returns an array of notebooks" >
 		<cfscript>
 			var notebooks = ""; 
@@ -221,12 +225,17 @@
 			var i = 0;
 			var retArray = createObject("Java","java.util.ArrayList");
 			var actual = "";
+			var tempNote = "";
 			
 			for(i = 1; i lte 12; i = i + 1){
-				retArray.Add("");
+				tempNote = duplicate(variables.mockNote);
+					
+				retArray.add(tempNote);		
 			}
+		
+			writedump(var=retArray,output="console");
 			
-			//variables.mockito.when(mockCFEvernote.listNotebooks(12)).thenReturn(retArray);
+			variables.mockito.when(mockCFEvernote.listNotebooks(12)).thenReturn(retArray);
 			
 			notebooks = variables.cfEvernote.getNotebooks(12); 
 			
@@ -238,6 +247,8 @@
 	
 	<cffunction name="testGetNotebookReturnsProperNotebook"  returntype="void" access="public" output="false" hint="I make sure that getting a notebook via guid returns the proper notebook" >
 		<cfscript>
+			variables.mockito.when(variables.mockNotebook.getGUID()).thenReturn("123abc");
+			
 			fail("method not written");
 		</cfscript>
 	</cffunction>
@@ -260,7 +271,7 @@
 				retArray.Add("#i#");
 			}
 			
-			variables.mockito.when(mockCFEvernote.listNotes()).thenReturn(retArray);
+			variables.mockito.when(variables.mockCFEvernote.listNotes()).thenReturn(retArray);
 			
 			variables.cfEvernote.setCFEvernote(mockCFEvernote);
 			
