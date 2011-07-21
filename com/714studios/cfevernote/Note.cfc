@@ -22,7 +22,8 @@
 		<cfscript>
 			instance.classLoader = createObject("component", "JavaLoader").init(["#libDirectory#/CFEvernote.jar","#libDirectory#/evernote-api-1.18.jar","#libDirectory#/libthrift.jar"]);  
 	
-			if(arguments.note neq "" AND arguments.note.getClass().getName() eq "com.evernote.edam.type.Note")
+			//TODO: try to find a better way to test that the arguments.notebook is of the right type.  Right now its like this because mockito appends junk to the getname()
+			if(arguments.note neq "" AND arguments.note.getClass().getName().indexOf("com.evernote.edam.type.Note") neq -1)
 				instance.note = arguments.note;
 			else
 				instance.note = instance.classLoader.create("com.evernote.edam.type.Note").init();	

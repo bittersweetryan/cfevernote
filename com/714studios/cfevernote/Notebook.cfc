@@ -9,12 +9,13 @@
 		<cfargument name="notebook" type="any" required="false" default="" displayname="" />
 		<cfscript>
 			instance.classLoader = createObject("component", "JavaLoader").init(["#libDirectory#/CFEvernote.jar","#libDirectory#/evernote-api-1.18.jar","#libDirectory#/libthrift.jar"]);  
-			
-			if(arguments.notebook neq "" AND arguments.notebook.getClass().getName() eq "com.evernote.edam.type.notebook")
+
+			//TODO: try to find a better way to test that the arguments.notebook is of the right type.  Right now its like this because mockito appends junk to the getname()
+			if(arguments.notebook neq "" AND arguments.notebook.getClass().getName().indexOf("com.evernote.edam.type.Notebook") neq -1)
 				variables.instance.notebook = notebook;
 			else
 				variables.instance.notebook = instance.classLoader.create("com.evernote.edam.type.Notebook").init();
-				
+			
 			return this;
 		</cfscript>
 	</cffunction>

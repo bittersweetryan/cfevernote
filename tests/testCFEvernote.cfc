@@ -247,9 +247,16 @@
 	
 	<cffunction name="testGetNotebookReturnsProperNotebook"  returntype="void" access="public" output="false" hint="I make sure that getting a notebook via guid returns the proper notebook" >
 		<cfscript>
-			variables.mockito.when(variables.mockNotebook.getGUID()).thenReturn("123abc");
+			var expected = variables.mockNotebook;
+			var notebook = "";	
+			var actual = "";
 			
-			fail("method not written");
+			variables.mockito.when(variables.mockNotebook.getGUID()).thenReturn("aac89a28-c080-4bde-92f6-9eaa8c27ee49");
+			variables.mockito.when(variables.mockCFEvernote.getNotebook("aac89a28-c080-4bde-92f6-9eaa8c27ee49")).thenReturn(variables.mockNotebook);
+		
+			actual = variables.cfEvernote.getNotebook("aac89a28-c080-4bde-92f6-9eaa8c27ee49").getNotebook();
+	
+			assertEquals(expected,actual);
 		</cfscript>
 	</cffunction>
 	

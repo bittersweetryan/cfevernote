@@ -4,19 +4,28 @@
  */
 package com.sudios714.cfevernote;
 
+import com.evernote.edam.notestore.*;
 import com.evernote.edam.type.Note;
 import com.evernote.edam.type.Notebook;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import org.junit.runner.RunWith;
+
 import java.util.ArrayList;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 public class CFEvernoteTest {
     
     CFEvernote instance;
     
-    private static final String AUTH_TOKEN = "S=s1:U=ddec:E=131333cf71c:C=1312e169b1c:P=7:A=bittersweetryan:H=0cd43a52a8ee4b4cbe813f5b5535e1b2";
+    
+    private static final String AUTH_TOKEN = "S=s1:U=ddec:E=1314ad8fcdb:C=13145b2a0db:P=7:A=bittersweetryan:H=211714ad70042ee026f6be18f6027de1";
     private static final String SHARD = "s1";
     private static final String USER_ID = "56812";
     private static final String EVERNOTE_URL = "sandbox.evernote.com";
@@ -81,7 +90,7 @@ public class CFEvernoteTest {
         try{
             ArrayList notebooks = (ArrayList)this.instance.listNotebooks();
             //this test is a little fragile since it depends on the number of notebooks in the account, should make better
-            int expected = 2;
+            int expected = 9;
             int actual = notebooks.size();
 
             assertEquals(expected,actual);
@@ -156,6 +165,8 @@ public class CFEvernoteTest {
         Class actual = notebook.getClass();
         
         assertEquals(expected,actual);
+        
+        assertTrue(notebook.isDefaultNotebook());
     }
     
     @Test
@@ -169,8 +180,22 @@ public class CFEvernoteTest {
         assertEquals(expected,actual);
     }
     
+   
     @Test
     public void testCreateNote() throws Exception{
-        fail("Method not created yet");
+        
+        Note mockNote = mock(Note.class);
+        NoteStore.Client mockClient = mock(NoteStore.Client.class);
+        
+        instance.setNoteStore(mockClient);
+        
+        when(mockClient.createNote(AUTH_TOKEN, mockNote)).thenReturn(mockNote);
+                
+        Note createdNote = instance.createNote(mockNote);
+        //make sure the note was returned
+        assertEquals(mockNote,createdNote);
+        
+        //make sure that cfevernote got called
+        verify(mockClient).createNote(AUTH_TOKEN, mockNote);
     }
 }

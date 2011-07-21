@@ -268,7 +268,6 @@ public class CFEvernote {
         return noteList;
     }
     
-    
     private void checkInitialized() throws Exception{
          if(!this.isInitialized()){
             throw new Exception("Object not initalized");

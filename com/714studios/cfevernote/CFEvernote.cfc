@@ -255,7 +255,6 @@ THE SOFTWARE.
 							
 			for(i = 0; i lt notebooks.size(); i = i+1){
 				retNotebooks[i+1] = createObject("component","com.714studios.cfevernote.notebook").init(instance.libDir,notebooks.get(i));
-				writedump(var=i,output="console");
 			}
 
 			notebooks = "";
@@ -265,8 +264,14 @@ THE SOFTWARE.
 	</cffunction>
 	
 	<cffunction name="getNotebook" returntype="any" access="public" output="false" hint="I return a specific notebook based on its guid" >
-		<cfargument name="notebookID" type="numeric" required="false" default="0" hint="notebook ID to get" />
+		<cfargument name="guid" type="String" required="false" default="0" hint="notebook ID to get" />
 		<cfscript>
+			var notebook = "";
+			var evernoteNotebook = instance.cfEvernote.getNotebook(arguments.guid);
+			
+			notebook = createObject("component","com.714studios.cfevernote.Notebook").init(instance.libDir,evernoteNotebook);
+
+			return notebook;
 		</cfscript>
 	</cffunction>
 	
