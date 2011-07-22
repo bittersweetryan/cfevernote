@@ -20,7 +20,12 @@ import com.evernote.edam.userstore.*;
 import com.evernote.edam.error.*;
 import com.evernote.edam.userstore.Constants;
 import com.evernote.edam.type.*;
+import java.lang.reflect.Method;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -220,18 +225,73 @@ public class CFEvernote {
         return notes;
     }
     
-    public Note createNote(Note note) throws Exception{
+    /***
+     * Create note method that accepts a generic Object as a param, this is becuase
+     * ColdFusion will not reconize the Note datatype when calling this method
+     * @param note
+     * @return
+     * @throws Exception 
+     */
+    public Note createNote(Object note) throws Exception{
+        
+        Note createdNote;
+        Note castedNote;
+        
+        try{
+            castedNote = (Note)note;
+        }
+        catch(Exception ex){
+            
+            Class c = note.getClass();
+            Method m[] = c.getMethods();
+            String methods = "";
+            
+            for(Method meth : m){
+                methods.concat(meth.getName());
+            }
+            
+            throw new Exception("Object passed in was not a note object.".concat(methods).concat(ex.getMessage()));
+        }
+        
+        try{
+            checkEmptyTitle(castedNote);
+            createdNote = createNote(castedNote);
+        }
+        catch(Exception ex){
+            throw ex;
+        }
     
-        Note createdNote = noteStore.createNote(authToken, note);
+        return createdNote;
+    }
+        
+    public Note createNote(Note note) throws Exception{
+        Note createdNote;
+        
+        checkEmptyTitle(note);
+        
+        try{
+            createdNote = noteStore.createNote(authToken, note);
+        }
+        catch(Exception ex){
+            throw ex;
+        }
     
         return createdNote;
     }
     
     public Note createNote(String content) throws Exception{
         Note note = new Note();
+        
+        checkEmptyTitle(note);
+        
         note.setContent(content);
         
         return createNote(note);  
+    }
+    
+    private void checkEmptyTitle(Note note){
+         if(!note.isSetTitle())
+            note.setTitle("Created - ".concat(" ").concat(getFormattedDate()));
     }
     
     /**
@@ -279,6 +339,13 @@ public class CFEvernote {
          if(!this.isInitialized()){
             throw new Exception("Object not initalized");
         }
+    }
+    
+    private String getFormattedDate(){
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+        Date date = new Date();
+        
+        return dateFormat.format(date);
     }
     
     /************************************************

@@ -1,14 +1,43 @@
+<!---
+Copyright (c) 2011 Ryan S. Anklam (714 Studios, LLC)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+--->
+
 <cfcomponent output="false" displayname="Notebook">
 	<cfscript>
 		variables.instance = {};
-		variables.instance.notebook = "";
+		
+		instance.notebook = "";
+		instance.libDirectory = "";
+		instance.jarArray = "";
 	</cfscript>
 	
 	<cffunction name="init" returntype="Notebook" access="public" output="false" hint="I am the constructor for the notbook component" >
 		<cfargument name="libDirectory" type="string" required="false" default="#getDirectoryFromPath(getCurrentTemplatePath())#/lib">
 		<cfargument name="notebook" type="any" required="false" default="" displayname="" />
 		<cfscript>
-			instance.classLoader = createObject("component", "JavaLoader").init(["#libDirectory#/CFEvernote.jar","#libDirectory#/evernote-api-1.18.jar","#libDirectory#/libthrift.jar"]);  
+			instance.libDirectory = arguments.libDirectory;
+			
+			instance.jarArray = ["#libDirectory#/CFEvernote.jar","#libDirectory#/evernote-api-1.18.jar","#libDirectory#/libthrift.jar"];
+			//should these go into a metadata constant??
+			setClassLoader(instance.jarArray);  
 
 			//TODO: try to find a better way to test that the arguments.notebook is of the right type.  Right now its like this because mockito appends junk to the getname()
 			if(arguments.notebook neq "" AND arguments.notebook.getClass().getName().indexOf("com.evernote.edam.type.Notebook") neq -1)
@@ -82,4 +111,30 @@
 		</cfscript>
 	</cffunction>
 	
+	<cffunction name="reInitClassLoader" returntype="void" access="public" output="false" hint="I clear the classloader in the metadata" >
+		<cfscript>
+			var meta = getMetaData(this);
+			
+			if(strictKeyExists(meta,"classLoader"))
+				structDelete(meta,"classLoader");
+				
+			setClassLoader(instance.jarArray);
+		</cfscript>
+	</cffunction>
+	
+	<!----------------------------------- 
+	*	       Private methods          *
+	------------------------------------>
+	<cffunction name="setClassLoader" returntype="void" access="private" output="false" hint="I put this objects classloader into the metadata its only created once" >
+		<cfargument name="libs" type="array" required="true">
+		<cfscript>
+			var meta = getMetaData(this);
+			
+			//class loader doesn't exist yet
+			if(!structKeyExists(meta,"classLoader"))
+				meta.classLoader = createObject("component", "JavaLoader").init(arguments.libs);
+				
+			instance.classLoader =meta.classLoader;
+		</cfscript>
+	</cffunction>
 </cfcomponent>

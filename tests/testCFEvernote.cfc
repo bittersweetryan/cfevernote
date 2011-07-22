@@ -232,8 +232,6 @@
 					
 				retArray.add(tempNote);		
 			}
-		
-			writedump(var=retArray,output="console");
 			
 			variables.mockito.when(mockCFEvernote.listNotebooks(12)).thenReturn(retArray);
 			
@@ -321,23 +319,32 @@
 			//mock java note object, gets returned by cfevernote java object when a new note is created
 			var mockNote = variables.mockito.mock(variables.classLoader.create("com.evernote.edam.type.Note").getClass());
 			mockito.when(mockNote.getContent()).thenReturn('<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd"><en-note><b>Hello World</b></en-note>');
-			mockito.when(mockCFEvernote.createNote(content)).thenReturn(mockNote);
-
+			mockito.when(mockCFEvernote.createNote(mockNote)).thenReturn(mockNote);
+			
 			//mock coldfusion note, gets returned by cfevernote coldfusion object when a note is created
 			var note = mock(createObject("component","com.714studios.cfevernote.Note"));
 			note.getContent().returns(content);
 
 			note.getNote().returns(mockNote);
+			note.getTitle().returns("");
 			
 			expected = note;
-			
 			actual = variables.cfEvernote.addNote(note);
 			
 			assertSame(expected,actual);
 		</cfscript>
 	</cffunction>
-	
-	<cffunction name="testCreateNoteShouldReturnTheProperContent"  returntype="void" access="public" output="false" hint="I test creating a note returns the correct content" >
+
+	<cffunction name="testingnotecreation" returntype="void" access="public" output="false" hint="" >
+		<cfscript>
+			var note = createObject("Component","com.714studios.cfevernote.Note").init("D:\\inetpub\\wwwroot\\cfevernote\\lib\\");
+			var jNote = note.getNote();
+			
+			var proxy = createObject("Java","coldfusion.runtime.java.JavaProxy");
+		</cfscript>
+	</cffunction>
+
+	<cffunction name="testCreateNotebookReturnsNotebook"  returntype="void" access="public" output="false" hint="I test creating a notebook" >
 		<cfscript>
 			fail("test not yet written");
 		</cfscript>

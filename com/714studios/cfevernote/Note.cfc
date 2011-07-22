@@ -1,6 +1,31 @@
+<!---
+Copyright (c) 2011 Ryan S. Anklam (714 Studios, LLC)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+--->
+
 <cfcomponent displayname="Note">
 	<cfscript>
 		variables.instance = {};
+		
+		instance.libDirectory = "";
+		instance.jarArray = "";
 		
 		variables.allowedTags = {A="a", ABBR="abbr", ACRONYM="acronym", ADDRESS="address", AREA="area", B="b", BDO="bdo", BIG="big", BLOCKQUOTE="blockquote", 
 								 BR="br",CAPTION="caption", CENTER="center", CITE="cite", CODE="code", COL="col", COLGROUP="colgroup", DD="dd", DEL="del", DFN="dfn", 
@@ -20,7 +45,11 @@
 		<cfargument name="libDirectory" type="string" required="false" default="#getDirectoryFromPath(getCurrentTemplatePath())#/lib">
 		<cfargument name="note" type="any" required="false" default="" />
 		<cfscript>
-			instance.classLoader = createObject("component", "JavaLoader").init(["#libDirectory#/CFEvernote.jar","#libDirectory#/evernote-api-1.18.jar","#libDirectory#/libthrift.jar"]);  
+			instance.libDirectory = arguments.libDirectory;
+			
+			instance.jarArray = ["#libDirectory#/CFEvernote.jar","#libDirectory#/evernote-api-1.18.jar","#libDirectory#/libthrift.jar"];
+			
+			setClassLoader(instance.jarArray);  
 	
 			//TODO: try to find a better way to test that the arguments.notebook is of the right type.  Right now its like this because mockito appends junk to the getname()
 			if(arguments.note neq "" AND arguments.note.getClass().getName().indexOf("com.evernote.edam.type.Note") neq -1)
@@ -46,6 +75,24 @@
 		<cfscript>
 			var epoch = dateDiff("s",DateConvert("utc2Local", "January 1 1970 00:00"), arguments.dateCreated);
 			instance.note.setCreated(javaCast("Long",epoch));
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="setTitle" returntype="void" access="public" output="false" hint="I set this notes title." >
+		<cfargument name="title" type="String" required="false" default="" displayname="" />
+		<cfscript>
+			instance.note.setTitle(arguments.title);
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="getTitle" returntype="String" access="public" output="false" hint="I get this notes title." >
+		<cfscript>
+			var title = instance.note.getTitle();
+			
+			if(isDefined("title"))
+				return title;
+			else
+				return "";
 		</cfscript>
 	</cffunction>
 	
@@ -142,10 +189,33 @@
 		</cfscript>
 	</cffunction>
 	
+	<cffunction name="reInitClassLoader" returntype="void" access="public" output="false" hint="I clear the classloader in the metadata" >
+		<cfscript>
+			var meta = getMetaData(this);
+			
+			if(strictKeyExists(meta,"classLoader"))
+				structDelete(meta,"classLoader");
+				
+			setClassLoader(instance.jarArray);
+		</cfscript>
+	</cffunction>
+	
 	<!----------------------------------- 
 	*	       Private methods          *
 	------------------------------------>
-	
+	<cffunction name="setClassLoader" returntype="void" access="private" output="false" hint="I put this objects classloader into the metadata its only created once" >
+		<cfargument name="libs" type="array" required="true">
+		<cfscript>
+			var meta = getMetaData(this);
+			
+			//class loader doesn't exist yet
+			if(!structKeyExists(meta,"classLoader"))
+				meta.classLoader = createObject("component", "JavaLoader").init(arguments.libs);
+				
+			instance.classLoader =meta.classLoader;
+		</cfscript>
+	</cffunction>
+
 	<cffunction name="convertHTML" returntype="xml" access="private" output="false" hint="I search for html and body tags and replace them with enml en-note tags" >
 		<cfargument name="content" type="String" required="true" />
 		<cfscript>
@@ -228,6 +298,7 @@
 		</cfscript>
 	</cffunction>
 	
+	<!-- Move this up to a base class -->
 	<cffunction name="throw" returntype="void" access="private" output="false" hint="Used as a proxy for throw for cf versions less than 9" >
 		<cfargument name="type" type="String" required="false" default="" />
 		<cfargument name="message" type="String" required="false" default="" />

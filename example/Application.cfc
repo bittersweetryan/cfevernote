@@ -10,6 +10,7 @@
 		this.mappings["/lib"] = expandpath("../lib") & this.seperator;
 		
 		this.sessionManagement = true;
+		this.sessionTimeout = createTimeSpan(1,0,0,0);
 	</cfscript>
 	
 	<cffunction name="OnApplicationStart" access="public" returntype="boolean" output="false">

@@ -217,4 +217,16 @@
 			assertSame(expected,actual);
 		</cfscript>
 	</cffunction>
+	
+	<cffunction name="testSetTitleSetsTitle"  returntype="void" access="public" output="false" hint="I test setting a notes title" >
+		<cfscript>
+			var expected = "Hello, Title.";
+			var actual = "";
+			
+			variables.note.setTitle("Hello, Title.");
+			actual = variables.note.getTitle();
+			
+			assertEquals(expected,actual);
+		</cfscript>
+	</cffunction>
 </cfcomponent>

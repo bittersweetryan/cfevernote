@@ -25,10 +25,11 @@ THE SOFTWARE.
 		//instance scope
 		variables.instance = structNew();
 		
-		variables.instance.libDir = "";
+		instance.libDirectory = "";
+		instance.jarArray = "";
 		
 		//oauth information
-		variables.instance.oAuth = structNew();
+		instance.oAuth = structNew();
 		
 		//your evernote api key (secret)
 		instance.oAuth.apiKey = "";
@@ -85,7 +86,7 @@ THE SOFTWARE.
 		<cfargument name="apiKey" type="string" required="false" default="" />
 		<cfargument name="evernoteHost" type="string" required="false" default="" />
 		<cfargument name="callbackURL" type="string" required="false" default="" />
-		<cfargument name="libDir" type="string" required="false" default="#getDirectoryFromPath(getCurrentTemplatePath())#/lib">
+		<cfargument name="libDirectory" type="string" required="false" default="#getDirectoryFromPath(getCurrentTemplatePath())#/lib">
 		
 		<cfscript>
 			if(arguments.apiKey neq "")
@@ -103,10 +104,13 @@ THE SOFTWARE.
 			if(arguments.callbackURL neq "")
 				instance.oAuth.callbackURL = arguments.callbackURL;
 			
-			instance.classLoader = createObject("component", "JavaLoader").init(["#libDir#/CFEvernote.jar","#libDir#/evernote-api-1.18.jar","#libDir#/libthrift.jar"]);  
-			instance.cfEvernote = instance.classLoader.create("com.sudios714.cfevernote.CFEvernote").init(instance.oAuth.evernoteHost, instance.evernote.userAgent);
+			instance.libDirectory = arguments.libDirectory;
 			
-			instance.libDir = arguments.libDir;
+			instance.jarArray = ["#libDirectory#/CFEvernote.jar","#libDirectory#/evernote-api-1.18.jar","#libDirectory#/libthrift.jar"];
+			//should these go into a metadata constant??
+			setClassLoader(instance.jarArray);  
+			
+			instance.cfEvernote = instance.classLoader.create("com.sudios714.cfevernote.CFEvernote").init(instance.oAuth.evernoteHost, instance.evernote.userAgent);
 					
 			return this;
 		</cfscript>
@@ -254,7 +258,7 @@ THE SOFTWARE.
 			}
 							
 			for(i = 0; i lt notebooks.size(); i = i+1){
-				retNotebooks[i+1] = createObject("component","com.714studios.cfevernote.notebook").init(instance.libDir,notebooks.get(i));
+				retNotebooks[i+1] = createObject("component","com.714studios.cfevernote.notebook").init(instance.libDirectory,notebooks.get(i));
 			}
 
 			notebooks = "";
@@ -269,7 +273,7 @@ THE SOFTWARE.
 			var notebook = "";
 			var evernoteNotebook = instance.cfEvernote.getNotebook(arguments.guid);
 			
-			notebook = createObject("component","com.714studios.cfevernote.Notebook").init(instance.libDir,evernoteNotebook);
+			notebook = createObject("component","com.714studios.cfevernote.Notebook").init(instance.libDirectory,evernoteNotebook);
 
 			return notebook;
 		</cfscript>
@@ -285,22 +289,67 @@ THE SOFTWARE.
 	<cffunction name="getNotes" returntype="Array" access="public" output="false" hint="I return a list of a users notebooks" >
 		<cfargument name="maxCount" type="numeric" required="false" default="0" hint="The maximum number of notes to get" />
 		<cfscript>
+			var note = "";
+			var noteArray = arrayNew(1);
+			var notes = "";
+			var i = 0;
+			
 			if(arguments.maxCount)
-				return instance.cfEvernote.listNotes(maxCount);
+				notes = instance.cfEvernote.listNotes(maxCount);
 			else
-				return instance.cfEvernote.listNotes();
+				notes = instance.cfEvernote.listNotes();
+				
+			for(i = 0; i lt notes.size(); i = i + 1){
+				noteArray[i+1] = createObject("component","com.714studios.cfevernote.note").init(instance.libDirectory,notes.get(i));
+			}	
+			
+			return noteArray;
 		</cfscript>
 	</cffunction>
 	
 	<cffunction name="addNote" returntype="com.714studios.cfevernote.Note" access="public" output="false" hint="I add a note to evernote" >
 		<cfargument name="note" type="com.714studios.cfevernote.Note" required="true" />
 		<cfscript>
-			var javaNote = instance.cfEvernote.createNote(javaCast("String",arguments.note.getContent()));
+			var javaNote = "";
+			
+			if(arguments.note.getTitle() eq "")
+				arguments.note.setTitle("Created - " & DateFormat(Now(),"mm/dd/yyyy"));	
+					
+			javaNote = instance.cfEvernote.createNote(arguments.note.getNote());
+			
 			arguments.note.setNote(javaNote);
 			
 			return arguments.note;
 		</cfscript>	
 	</cffunction>
+	
+	<cffunction name="reInitClassLoader" returntype="void" access="public" output="false" hint="I clear the classloader in the metadata" >
+		<cfscript>
+			var meta = getMetaData(this);
+			
+			if(strictKeyExists(meta,"classLoader"))
+				structDelete(meta,"classLoader");
+				
+			setClassLoader(instance.jarArray);
+		</cfscript>
+	</cffunction>
+	
+	<!----------------------------------- 
+	*	       Private methods          *
+	------------------------------------>
+	<cffunction name="setClassLoader" returntype="void" access="private" output="false" hint="I put this objects classloader into the metadata its only created once" >
+		<cfargument name="libs" type="array" required="true">
+		<cfscript>
+			var meta = getMetaData(this);
+			
+			//class loader doesn't exist yet
+			if(!structKeyExists(meta,"classLoader"))
+				meta.classLoader = createObject("component", "JavaLoader").init(arguments.libs);
+				
+			instance.classLoader =meta.classLoader;
+		</cfscript>
+	</cffunction>
+	
 	<!--------------------------------------------
 	*   	     Mutaters and Accessors          *
 	--------------------------------------------->
