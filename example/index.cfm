@@ -48,6 +48,11 @@
 			writedump(var=session.cfEvernote.getNotes());
 			break;
 		}
+		case "reinitClassLoader":
+		{
+			session.cfEvernote.reInitClassLoader();
+			break;	
+		}
 	}
 </cfscript>
 
@@ -83,6 +88,9 @@
 		<ul>
 			<li>
 				<a href="index.cfm?reset=true">Reset Session Evernote Object (clears credentials)</a>
+			</li>
+			<li>
+				<a href="index.cfm?action=reinitClassLoader">Reinit ClassLoader</a>
 			<li>
 				<a href="index.cfm?action=getNotebooks">Get Notebooks</a>
 			</li>

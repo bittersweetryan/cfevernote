@@ -30,6 +30,13 @@ import java.util.Iterator;
 import java.util.List;
 
 //imprt thrift
+import java.util.Map;
+import java.util.logging.FileHandler;
+
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.transport.THttpClient;
@@ -226,45 +233,31 @@ public class CFEvernote {
     }
     
     /***
-     * Create note method that accepts a generic Object as a param, this is becuase
-     * ColdFusion will not reconize the Note datatype when calling this method
-     * @param note
+     * This is the only way I was able to create a note for now.  I'll try to pass in an object later
+     * @param content
+     * @param title
+     * @param notebookGUID
+     * @param created
+     * @param tags
      * @return
      * @throws Exception 
      */
-    public Note createNote(Object note) throws Exception{
+    public Note createNote(String content, String title, String notebookGUID, Long created, String[] tags) throws Exception{
+        Note newNote = new Note();
         
-        Note createdNote;
-        Note castedNote;
+        newNote.setContent(content);
+        newNote.setTitle(title);
+        newNote.setNotebookGuid(notebookGUID);
+        newNote.setCreated(created);
         
-        try{
-            castedNote = (Note)note;
-        }
-        catch(Exception ex){
-            
-            Class c = note.getClass();
-            Method m[] = c.getMethods();
-            String methods = "";
-            
-            for(Method meth : m){
-                methods.concat(meth.getName());
-            }
-            
-            throw new Exception("Object passed in was not a note object.".concat(methods).concat(ex.getMessage()));
+        for(String tag : tags){
+            newNote.addToTagNames(tag);
         }
         
-        try{
-            checkEmptyTitle(castedNote);
-            createdNote = createNote(castedNote);
-        }
-        catch(Exception ex){
-            throw ex;
-        }
-    
-        return createdNote;
+        return createNote(newNote);
     }
-        
-    public Note createNote(Note note) throws Exception{
+    
+    private Note createNote(Note note) throws Exception{
         Note createdNote;
         
         checkEmptyTitle(note);
@@ -277,16 +270,6 @@ public class CFEvernote {
         }
     
         return createdNote;
-    }
-    
-    public Note createNote(String content) throws Exception{
-        Note note = new Note();
-        
-        checkEmptyTitle(note);
-        
-        note.setContent(content);
-        
-        return createNote(note);  
     }
     
     private void checkEmptyTitle(Note note){

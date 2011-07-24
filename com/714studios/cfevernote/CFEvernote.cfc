@@ -310,12 +310,28 @@ THE SOFTWARE.
 	<cffunction name="addNote" returntype="com.714studios.cfevernote.Note" access="public" output="false" hint="I add a note to evernote" >
 		<cfargument name="note" type="com.714studios.cfevernote.Note" required="true" />
 		<cfscript>
-			var javaNote = "";
+			var tags = arguments.note.getTagNames();
+			
+			var i = 0;
+			var stringClass = createObject("java","java.lang.String").getClass();
+			var reflection = createObject("java","java.lang.reflect.Array");
+			var tagArray = reflection.NewInstance(stringClass,javaCast("int", ArrayLen(tags)));
+			
+			
+			for(i = 0; i lt arrayLen(tags); i = i +1){
+				tagArray[i] = tags[i+1];
+			}
 			
 			if(arguments.note.getTitle() eq "")
 				arguments.note.setTitle("Created - " & DateFormat(Now(),"mm/dd/yyyy"));	
-					
-			javaNote = instance.cfEvernote.createNote(arguments.note.getNote());
+				
+			try{
+				instance.cfEvernote.createNote(arguments.note.getContent(), arguments.note.getTitle(), arguments.note.getNotebookGUID(), 
+											   arguments.note.getGUID(), tagArray);	
+			}	
+			catch(Any ex){
+				writedump(var=ex, abort=true);
+			}
 			
 			arguments.note.setNote(javaNote);
 			
@@ -327,7 +343,7 @@ THE SOFTWARE.
 		<cfscript>
 			var meta = getMetaData(this);
 			
-			if(strictKeyExists(meta,"classLoader"))
+			if(structKeyExists(meta,"classLoader"))
 				structDelete(meta,"classLoader");
 				
 			setClassLoader(instance.jarArray);

@@ -193,7 +193,7 @@ THE SOFTWARE.
 		<cfscript>
 			var meta = getMetaData(this);
 			
-			if(strictKeyExists(meta,"classLoader"))
+			if(structKeyExists(meta,"classLoader"))
 				structDelete(meta,"classLoader");
 				
 			setClassLoader(instance.jarArray);
