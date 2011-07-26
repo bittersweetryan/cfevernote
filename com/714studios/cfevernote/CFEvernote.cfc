@@ -311,28 +311,43 @@ THE SOFTWARE.
 		<cfargument name="note" type="com.714studios.cfevernote.Note" required="true" />
 		<cfscript>
 			var tags = arguments.note.getTagNames();
+			var guid = arguments.note.getNotebookGUID();
+			var javaNote = arguments.note.getNote();
+			var content = arguments.note.getContent();
 			
-			var i = 0;
-			var stringClass = createObject("java","java.lang.String").getClass();
-			var reflection = createObject("java","java.lang.reflect.Array");
-			var tagArray = reflection.NewInstance(stringClass,javaCast("int", ArrayLen(tags)));
-			
-			
-			for(i = 0; i lt arrayLen(tags); i = i +1){
-				tagArray[i] = tags[i+1];
-			}
+			var temp = "";
 			
 			if(arguments.note.getTitle() eq "")
 				arguments.note.setTitle("Created - " & DateFormat(Now(),"mm/dd/yyyy"));	
-				
+			
+			arguments.note.setDateCreated(DateFormat(NOW(),"mm/dd/yyyy"));
+							
 			try{
-				instance.cfEvernote.createNote(arguments.note.getContent(), arguments.note.getTitle(), arguments.note.getNotebookGUID(), 
-											   arguments.note.getGUID(), tagArray);	
+				//TODO: this need some rework, multiple if statements seem kludgy howver according to the cfdocs assigning a varialbe
+				//to javacast null can return unexpected results (http://livedocs.adobe.com/coldfusion/8/htmldocs/help.html?content=functions_in-k_45.html)
+				//if(guid eq "" and not arrayLen(tags)){
+					instance.cfEvernote.createNote(arguments.note.getContent(), 
+												   arguments.note.getTitle(), 
+												   null(), 
+												   arguments.note.getCreatedEPOCH(), 
+												   null());	
+				/*
+				}
+				else if(guid neq "" and not arrayLen(tagArray)){
+					instance.cfEvernote.createNote(arguments.note.getContent(), arguments.note.getTitle(), guid, javaCast("long",arguments.note.getCreated()), null());
+				}
+				else if(guid eq "" and arrayLen(tagArray)){
+					instance.cfEvernote.createNote(arguments.note.getContent(), arguments.note.getTitle(), null(), javaCast("long",arguments.note.getCreated()), tagArray);
+				}
+				else{
+					instance.cfEvernote.createNote(arguments.note.getContent(), arguments.note.getTitle(), guid, javaCast("long",arguments.note.getCreated()), tagArray);	
+				}
+				*/
 			}	
-			catch(Any ex){
+			catch(any ex){
 				writedump(var=ex, abort=true);
 			}
-			
+	
 			arguments.note.setNote(javaNote);
 			
 			return arguments.note;
@@ -466,4 +481,10 @@ THE SOFTWARE.
 	</cffunction>
 
 	<!--- get method for determining if the evernote object is initialized or not--->
+	
+	<cffunction name="null" returntype="any" access="private" output="false" hint="I return a javacast null" >
+		<cfscript>
+			return javaCast("null","");
+		</cfscript>		
+	</cffunction>
 </cfcomponent>

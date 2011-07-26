@@ -24,6 +24,14 @@
 		</cfscript>		
 	</cffunction>
 	
+	<cffunction name="tearDown" access="public" output="false" returntype="void">
+		<cfscript>
+			variables.mockCFEvernote = "";
+			variables.mockNote = "";
+			variables.mockNotebook = "";
+		</cfscript>
+	</cffunction>
+	
 	<cffunction name="testSettingAPIKeyReturnsCorrectAPIKey" returntype="void" access="public" output="false">
 		<cfscript>
 			var expected = "ABC123";

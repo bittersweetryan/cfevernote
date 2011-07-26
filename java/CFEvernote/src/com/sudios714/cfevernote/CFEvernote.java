@@ -242,7 +242,10 @@ public class CFEvernote {
      * @return
      * @throws Exception 
      */
-    public Note createNote(String content, String title, String notebookGUID, Long created, String[] tags) throws Exception{
+    public Note createNote(String content, String title, String notebookGUID, long created, String[] tags) throws Exception{
+        
+        this.checkInitialized();
+        
         Note newNote = new Note();
         
         newNote.setContent(content);
@@ -250,8 +253,10 @@ public class CFEvernote {
         newNote.setNotebookGuid(notebookGUID);
         newNote.setCreated(created);
         
-        for(String tag : tags){
-            newNote.addToTagNames(tag);
+        if(tags != null){
+            for(String tag : tags){
+                newNote.addToTagNames(tag);
+            }
         }
         
         return createNote(newNote);

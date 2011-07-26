@@ -78,6 +78,12 @@ THE SOFTWARE.
 		</cfscript>
 	</cffunction>
 	
+	<cffunction name="getCreatedEPOCH" returntype="numeric" access="public" output="false" hint="I get the unformated EPOCH date from the note object" >
+		<cfscript>
+			return instance.note.getCreated();
+		</cfscript>
+	</cffunction>
+	
 	<cffunction name="setTitle" returntype="void" access="public" output="false" hint="I set this notes title." >
 		<cfargument name="title" type="String" required="false" default="" displayname="" />
 		<cfscript>
@@ -176,6 +182,7 @@ THE SOFTWARE.
 		<cfscript>
 			var i = "";
 			
+			//might want to test what is faster, this way or casting the array as a java array
 			for(i = 1; i lte arrayLen(arguments.tagNames); i = i + 1){
 				addTag(arguments.tagNames[i]);
 			}

@@ -21,6 +21,16 @@
 		session.cfEvernote.getTokenCredentials();
 	}
 	
+	/*******
+	  Used for create note example
+	*******/
+	if(session.cfEvernote.getAuthToken() neq ""){
+		notebooks = session.cfEvernote.getNotebooks();	
+	}
+	else{
+		notebooks = arrayNew(1);		
+	}
+
 	switch(action){
 		case "createNote":
 		{
@@ -31,15 +41,23 @@
 			//lastly add the note to evernote using the cfevernote
 			note = session.cfEvernote.addNote(note);
 			
-			writedump(var=note.getGUID());
-			writedump(var=note,abort=true);
+			if(form.tags neq ""){
+				tagNames = listToArray(form.tags,",");
+				
+				//here we can either loop through the tags and cal the addTag method like so:
+				//for(i = 1, i lte arrayLen(tagNames), i = i + 1){
+				//	note.addTag(tagNames[i]);
+				//}
+				//or use a shortcut
+				note.setTagNames(tagNames);
+			}
+			
+			writedump(var=note.getContent());
 			
 			break;
 		}
 		case "getNotebooks":
 		{
-			notebooks = session.cfEvernote.getNotebooks();
-			writedump(var=getMetaData(notebooks[1]));
 			writedump(var=session.cfEvernote.getNotebooks());
 			break;
 		}
@@ -54,6 +72,8 @@
 			break;	
 		}
 	}
+	
+	
 </cfscript>
 
 <html>
@@ -87,7 +107,7 @@
 		<h2>Evernote Actions</h2>
 		<ul>
 			<li>
-				<a href="index.cfm?reset=true">Reset Session Evernote Object (clears credentials)</a>
+				<a href="index.cfm?reset=true">Reset Session Evernote Object</a> 
 			</li>
 			<li>
 				<a href="index.cfm?action=reinitClassLoader">Reinit ClassLoader</a>
@@ -103,8 +123,15 @@
 	<div id="createNote">
 		<h2>Create Note</h2>
 		<form action="index.cfm?action=createNote" method="post">
+			Notebook: <select name="notebookID">
+				<option value="">Select One...</option>
+				<cfloop from="1" to="#arrayLen(notebooks)#" index="i">
+				<option value="#notebooks[i].getGUID()#">#notebooks[i].getName()#</option>
+				</cfloop>
 			<textarea name="content" id="content" rows="4" cols="30"></textarea>
+			Tags (seperate with comma) <input type="text" name="tags"/><br/>
 			<input type="submit" value="create note" />
+			
 		</form>
 	</div>
 	
