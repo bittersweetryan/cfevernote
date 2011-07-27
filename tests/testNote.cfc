@@ -71,6 +71,19 @@
 		</cfscript>
 	</cffunction>
 	
+	<cffunction name="testGetTickCount"  returntype="void" access="public" output="false" hint="I test the getting the tickcount for a note" >
+		<cfscript>
+			var expected = "1311768000000";
+			var actual = "";
+			
+			variables.note.setDateCreated(createDateTime(2011,7,27,7,0,0));
+			
+			actual = variables.note.getCreatedTickCount();
+			
+			assertEquals(expected,actual);
+		</cfscript>
+	</cffunction>
+	
 	<cffunction name="testSetContentWithStructuredNoteReturnsContent"  returntype="void" access="public" output="false" hint="" >
 		<cfscript>
 			var expected = '<?xml version="1.0" encoding="UTF-8"?>

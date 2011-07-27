@@ -38,9 +38,12 @@
 			note = createObject("component","com.714studios.cfevernote.note").init("#ExpandPath('../')#/lib");
 			//then set its content
 			note.setContent(form.content);
-			//lastly add the note to evernote using the cfevernote
-			note = session.cfEvernote.addNote(note);
 			
+			//set the notebook id if there is one
+			if(len(form.notebookID))
+				note.setNotebookGUID(form.notebookID);
+			
+			//set the tags if they exist
 			if(form.tags neq ""){
 				tagNames = listToArray(form.tags,",");
 				
@@ -51,6 +54,9 @@
 				//or use a shortcut
 				note.setTagNames(tagNames);
 			}
+			
+			//lastly add the note to evernote using the cfevernote
+			note = session.cfEvernote.addNote(note);
 			
 			writedump(var=note.getContent());
 			
@@ -122,6 +128,7 @@
 	
 	<div id="createNote">
 		<h2>Create Note</h2>
+		<cfif len(session.cfEvernote.getAuthToken())>
 		<form action="index.cfm?action=createNote" method="post">
 			Notebook: <select name="notebookID">
 				<option value="">Select One...</option>
@@ -133,6 +140,9 @@
 			<input type="submit" value="create note" />
 			
 		</form>
+		<cfelse>
+			To create a note authorize with evernote first.
+		</cfif>
 	</div>
 	
 	<cfif isDefined("url.method") AND url.method eq "getNotebooks">

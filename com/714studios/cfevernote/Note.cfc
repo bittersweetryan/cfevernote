@@ -64,7 +64,7 @@ THE SOFTWARE.
 	<cffunction name="getDateCreated" returntype="Date" access="public" output="false" hint="I get the date created of this notebook" >
 		<cfscript>
 			if(isNumeric(instance.note.getCreated()) AND instance.note.getCreated() neq 0)
-				return dateFormat(dateAdd("s",instance.note.getCreated(),DateConvert("utc2Local", "January 1 1970 00:00")),"m/d/yyyy");
+				return dateFormat(dateAdd("s",instance.note.getCreated()/1000,DateConvert("utc2Local", "January 1 1970 00:00")),"m/d/yyyy");
 			else
 				return "1/1/1900";
 		</cfscript>
@@ -73,12 +73,12 @@ THE SOFTWARE.
 	<cffunction name="setDateCreated" returntype="void" access="public" output="false" hint="I set the date created." >
 		<cfargument name="dateCreated" type="Date" required="false" default="1/1/1900" />
 		<cfscript>
-			var epoch = dateDiff("s",DateConvert("utc2Local", "January 1 1970 00:00"), arguments.dateCreated);
-			instance.note.setCreated(javaCast("Long",epoch));
+			var tickCount = dateDiff("s",DateConvert("utc2Local", "January 1 1970 00:00"), arguments.dateCreated) * 1000;
+			instance.note.setCreated(javaCast("Long",tickCount));
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="getCreatedEPOCH" returntype="numeric" access="public" output="false" hint="I get the unformated EPOCH date from the note object" >
+	<cffunction name="getCreatedTickCount" returntype="numeric" access="public" output="false" hint="I get the unformated EPOCH date from the note object" >
 		<cfscript>
 			return instance.note.getCreated();
 		</cfscript>
@@ -184,7 +184,7 @@ THE SOFTWARE.
 			
 			//might want to test what is faster, this way or casting the array as a java array
 			for(i = 1; i lte arrayLen(arguments.tagNames); i = i + 1){
-				addTag(arguments.tagNames[i]);
+				addTag(trim(arguments.tagNames[i]));
 			}
 		</cfscript>
 	</cffunction>
@@ -192,7 +192,7 @@ THE SOFTWARE.
 	<cffunction name="addTag" returntype="void" access="public" output="false" hint="I add a single tag to the tag array" >
 		<cfargument name="tagName" type="String" required="false" default="" />
 		<cfscript>
-			instance.note.addToTagNames(arguments.tagName);	
+			instance.note.addToTagNames(trim(arguments.tagName));	
 		</cfscript>
 	</cffunction>
 	

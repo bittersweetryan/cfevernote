@@ -311,7 +311,7 @@ THE SOFTWARE.
 		<cfargument name="note" type="com.714studios.cfevernote.Note" required="true" />
 		<cfscript>
 			var tags = arguments.note.getTagNames();
-			var guid = arguments.note.getNotebookGUID();
+			var notebookGUID = arguments.note.getNotebookGUID();
 			var javaNote = arguments.note.getNote();
 			var content = arguments.note.getContent();
 			
@@ -325,24 +325,23 @@ THE SOFTWARE.
 			try{
 				//TODO: this need some rework, multiple if statements seem kludgy howver according to the cfdocs assigning a varialbe
 				//to javacast null can return unexpected results (http://livedocs.adobe.com/coldfusion/8/htmldocs/help.html?content=functions_in-k_45.html)
-				//if(guid eq "" and not arrayLen(tags)){
-					instance.cfEvernote.createNote(arguments.note.getContent(), 
-												   arguments.note.getTitle(), 
-												   null(), 
-												   arguments.note.getCreatedEPOCH(), 
-												   null());	
-				/*
+				
+				//no notebook or tags were set
+				if(notebookGUID eq "" and not arrayLen(tags)){
+					instance.cfEvernote.createNote(arguments.note.getContent(), arguments.note.getTitle(), null(), arguments.note.getCreatedTickCount(), null());	
 				}
-				else if(guid neq "" and not arrayLen(tagArray)){
-					instance.cfEvernote.createNote(arguments.note.getContent(), arguments.note.getTitle(), guid, javaCast("long",arguments.note.getCreated()), null());
+				//only notebook was set
+				else if(notebookGUID neq "" and not arrayLen(tags)){
+					instance.cfEvernote.createNote(arguments.note.getContent(), arguments.note.getTitle(), notebookGUID, javaCast("long",arguments.note.getCreatedTickCount()), null());
 				}
-				else if(guid eq "" and arrayLen(tagArray)){
-					instance.cfEvernote.createNote(arguments.note.getContent(), arguments.note.getTitle(), null(), javaCast("long",arguments.note.getCreated()), tagArray);
+				//only tags were set
+				else if(notebookGUID eq "" and arrayLen(tags)){
+					instance.cfEvernote.createNote(arguments.note.getContent(), arguments.note.getTitle(), null(), javaCast("long",arguments.note.getCreatedTickCount()), javaCast("string[]",tags));
 				}
+				//everyting was set
 				else{
-					instance.cfEvernote.createNote(arguments.note.getContent(), arguments.note.getTitle(), guid, javaCast("long",arguments.note.getCreated()), tagArray);	
+					instance.cfEvernote.createNote(arguments.note.getContent(), arguments.note.getTitle(), notebookGUID, javaCast("long",arguments.note.getCreatedTickCount()), javaCast("string[]",tags));	
 				}
-				*/
 			}	
 			catch(any ex){
 				writedump(var=ex, abort=true);
