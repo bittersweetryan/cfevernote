@@ -200,7 +200,11 @@ public class CFEvernote {
         return this.listNotes(DEFAULT_ROWS_RETURNED);
     }
     
-    public ArrayList listNotes(int maxNotes)  throws Exception {    
+    public ArrayList listNotes(int maxNotes) throws Exception{
+        return this.listNotes(maxNotes, null);
+    }
+    
+    public ArrayList listNotes(int maxNotes, String notebookGUID)  throws Exception {    
         
         this.checkInitialized();
         
@@ -210,25 +214,46 @@ public class CFEvernote {
         ArrayList<Note> notes = new ArrayList();
         
         for (Notebook notebook : notebooks) {
+            notes.addAll(getNotesForNotebook(notebook, maxNotes));
             
-          NoteFilter filter = new NoteFilter();
-
-          filter.setNotebookGuid(notebook.getGuid());
-          filter.setOrder(NoteSortOrder.CREATED.getValue());
-          filter.setAscending(true);
-
-          NoteList noteList = noteStore.findNotes(authToken, filter, 0, maxNotes);
-          
-          ArrayList<Note> notebookNotes = (ArrayList)noteList.getNotes();
-
-          for (Note note : notebookNotes) {
-              notes.add(note);
-          }
-          
-          if(notes.size() == maxNotes)
-              break;
+            if(notes.size() >= maxNotes)
+                break;
+        }    
+        
+        //if we have more notes than the user asked for trim the list
+        if(notes.size() > maxNotes){
+            notes = (ArrayList)notes.subList(0, maxNotes - 1);
         }
+        
+        return notes;
+    }
     
+    
+    public ArrayList getNotesForNotebook(String notebookGUID, int maxNotes) throws Exception{
+        Notebook notebook = new Notebook();
+        
+        notebook.setGuid(notebookGUID);
+        
+        return this.getNotesForNotebook(notebook, maxNotes);
+    }
+    
+    private ArrayList getNotesForNotebook(Notebook notebook, int maxNotes) throws Exception{
+        
+        ArrayList<Note> notes = new ArrayList();
+        NoteFilter filter = new NoteFilter();
+
+        filter.setNotebookGuid(notebook.getGuid());
+        filter.setOrder(NoteSortOrder.CREATED.getValue());
+        filter.setAscending(true);
+
+        NoteList noteList = noteStore.findNotes(authToken, filter, 0, maxNotes);
+          
+        ArrayList<Note> notebookNotes = (ArrayList)noteList.getNotes();
+
+        for (Note note : notebookNotes) {
+            notes.add(note);
+        }
+           
         return notes;
     }
     
