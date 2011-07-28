@@ -191,6 +191,7 @@
 			assertEquals(expected,actual);
 		</cfscript>		
 	</cffunction>	
+	
 	<cffunction name="testSetGetAuthToken" returntype="void" access="public" output="false" hint="" >
 		<cfscript>
 			var expected = "abc123";
@@ -269,7 +270,24 @@
 	
 	<cffunction name="testGetNotesForNotebookReturnsNotes"  returntype="void" access="public" output="false" hint="I test getting notes for a notebook returns a list of notes for that notebook" >
 		<cfscript>
-			fail("method not written");
+			var noteList = createObject("java","java.util.ArrayList");
+			var notes = "";
+			var i = 0;
+			var actual = "";
+			var expected = "";
+			
+			for(i = 0; i lt 10; i = i + 1){
+				noteList.add(duplicate(mockNote));
+			}
+			
+			variables.mockito.when(variables.mockCFEvernote.getNotesForNotebook("aac89a28-c080-4bde-92f6-9eaa8c27ee49",10)).thenReturn(noteList);
+			variables.cfEvernote.setCFEvernote(mockCFEvernote);
+			
+			notes = variables.cfEvernote.getNotesForNotebook("aac89a28-c080-4bde-92f6-9eaa8c27ee49",10);
+			
+			expected = 10;
+			actual = arrayLen(notes);
+			assertEquals(expected, actual);
 		</cfscript>
 	</cffunction>
 	
@@ -336,7 +354,7 @@
 			mockito.when(mockCFEvernote.createNote(content,title,guid,created,javaCast("String[]",tags)).thenReturn(mockNote));
 			
 			//mock coldfusion note, gets returned by cfevernote coldfusion object when a note is created
-			var note = mock(createObject("component","com.714studios.cfevernote.Note"));
+			var note = mock("com.714studios.cfevernote.Note","typeSafe");
 			
 			note.getContent().returns(content);
 			note.getTitle().returns(created);
@@ -354,18 +372,15 @@
 		</cfscript>
 	</cffunction>
 
-	<cffunction name="testingnotecreation" returntype="void" access="public" output="false" hint="" >
-		<cfscript>
-			var note = createObject("Component","com.714studios.cfevernote.Note").init("D:\\inetpub\\wwwroot\\cfevernote\\lib\\");
-			var jNote = note.getNote();
-			
-			var proxy = createObject("Java","coldfusion.runtime.java.JavaProxy");
-		</cfscript>
-	</cffunction>
-
 	<cffunction name="testCreateNotebookReturnsNotebook"  returntype="void" access="public" output="false" hint="I test creating a notebook" >
 		<cfscript>
-			fail("test not yet written");
+			var mock = mock("com.714studios.cfevernote.Notebook", "typeSafe");
+			
+			mock.getName().returns("Test Notebook");
+			
+			mockito.when(mockCFEvernote.createNotebook("Test Notebook")).thenReturn(variables.mockNotebook);
+			
+			actual = variables.cfEvernote.createNotebook(mock);
 		</cfscript>
 	</cffunction>
 </cfcomponent>

@@ -204,6 +204,16 @@ public class CFEvernote {
         return this.listNotes(maxNotes, null);
     }
     
+    public Notebook createNotebook(String name) throws Exception{
+        Notebook notebook = new Notebook();
+        
+        notebook.setName(name);
+        
+        notebook = this.noteStore.createNotebook(authToken, notebook);
+        
+        return notebook;
+    }
+    
     public ArrayList listNotes(int maxNotes, String notebookGUID)  throws Exception {    
         
         this.checkInitialized();

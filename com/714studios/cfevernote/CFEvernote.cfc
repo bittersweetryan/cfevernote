@@ -250,16 +250,21 @@ THE SOFTWARE.
 			var retNotebooks = arrayNew(1);
 			var i = 0;
 			
-			if(arguments.maxCount){
-				notebooks = instance.cfEvernote.listNotebooks(arguments.maxCount);
+			try{
+				if(arguments.maxCount){
+					notebooks = instance.cfEvernote.listNotebooks(arguments.maxCount);
+				}
+				else{
+					notebooks = instance.cfEvernote.listNotebooks();
+				}		
 			}
-			else{
-				notebooks = instance.cfEvernote.listNotebooks();
+			catch(Any ex){
+				noteBooks = arrayNew(1);
 			}
-							
+			
 			for(i = 0; i lt notebooks.size(); i = i+1){
 				retNotebooks[i+1] = createObject("component","com.714studios.cfevernote.notebook").init(instance.libDirectory,notebooks.get(i));
-			}
+			}				
 
 			notebooks = "";
 			
@@ -271,18 +276,31 @@ THE SOFTWARE.
 		<cfargument name="guid" type="String" required="false" default="0" hint="notebook ID to get" />
 		<cfscript>
 			var notebook = "";
-			var evernoteNotebook = instance.cfEvernote.getNotebook(arguments.guid);
+			var evernoteNotebook = "";
 			
-			notebook = createObject("component","com.714studios.cfevernote.Notebook").init(instance.libDirectory,evernoteNotebook);
+			evernoteNotebook = instance.cfEvernote.getNotebook(arguments.guid);
+			
+			notebook = createObject("component","com.714studios.cfevernote.Notebook").init(instance.libDirectory,evernoteNotebook);	
 
 			return notebook;
 		</cfscript>
 	</cffunction>
 	
 	<cffunction name="getNotesForNotebook" returntype="Array" access="public" output="false" hint="I return a list " >
-		<cfargument name="notebookID" type="numeric" required="false" default="0" hint="notebook ID to get notes from" />
+		<cfargument name="notebookID" type="String" required="false" default="0" hint="notebook ID to get notes from" />
+		<cfargument name="maxNotes" type="numeric" required="false" default="9999" />
 		<cfscript>
+			var retNotes = arrayNew(1);
+			var notes = "";
+			var i = 0;
 			
+			notes = instance.cfEvernote.getNotesForNotebook(arguments.notebookID, arguments.maxNotes);
+			
+			for(i = 0; i lt notes.size(); i = i +1){
+				retNotes[i+1] = createObject("component","com.714studios.cfevernote.Note").init(instance.libDirectory,notes.get(i));
+			}
+			
+			return retNotes;
 		</cfscript>
 	</cffunction>
 	
@@ -340,7 +358,7 @@ THE SOFTWARE.
 				}
 				//everyting was set
 				else{
-					instance.cfEvernote.createNote(arguments.note.getContent(), arguments.note.getTitle(), notebookGUID, javaCast("long",arguments.note.getCreatedTickCount()), javaCast("string[]",tags));	
+					instance.cfEvernote.createNote(arguments.note.getContent(), arguments.note.getTitle(), notebookGUID, javaCast("long",arguments.note.getDateCreated()), javaCast("string[]",tags));	
 				}
 			}	
 			catch(any ex){
@@ -364,6 +382,16 @@ THE SOFTWARE.
 		</cfscript>
 	</cffunction>
 	
+	<cffunction name="createNotebook" returntype="com.714studios.cfevernote.Notebook" access="public" output="false" hint="I create a notebook" >
+		<cfargument name="notebook" type="com.714studios.cfevernote.Notebook" required="true" />
+		<cfscript>
+			var javaNotebook = instance.cfEvernote.createNotebook(arguments.notebook.getName());
+			
+			arguments.notebook.setNotebook(javaNotebook);
+			
+			return arguments.notebook;
+		</cfscript>
+	</cffunction>
 	<!----------------------------------- 
 	*	       Private methods          *
 	------------------------------------>

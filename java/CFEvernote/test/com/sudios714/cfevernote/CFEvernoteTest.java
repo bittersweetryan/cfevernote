@@ -23,7 +23,7 @@ public class CFEvernoteTest {
     CFEvernote instance;
     
     
-    private static final String AUTH_TOKEN = "S=s1:U=ddec:E=1316d48af19:C=13168225319:P=7:A=bittersweetryan:H=e0989c9d261e203eb0d282d4f580c139";
+    private static final String AUTH_TOKEN = "S=s1:U=ddec:E=1317392a4ff:C=1316e6c48ff:P=7:A=bittersweetryan:H=67e9176d034e09126b3d8bfe84469b3e";
     private static final String SHARD = "s1";
     private static final String USER_ID = "56812";
     private static final String EVERNOTE_URL = "sandbox.evernote.com";
@@ -214,6 +214,19 @@ public class CFEvernoteTest {
         //becuase I can't mock the note object thats being created in the cfevernote class I can't
         //do much more with this method until I can learn to verivy and mock based on a class instead of an actual
         //object
+    }
+    
+    @Test
+    public void testCreatingANotebook() throws Exception{
+        Notebook mockNotebook = mock(Notebook.class);
+        
+        NoteStore.Client mockClient = mock(NoteStore.Client.class);
+        
+        instance.setNoteStore(mockClient);
+        
+        when(mockNotebook.getName()).thenReturn("Test Notebook");
+        
+        Notebook createdNotebook = instance.createNotebook("Test Notebook");
     }
     
     @Test
