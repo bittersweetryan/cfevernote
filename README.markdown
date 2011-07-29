@@ -3,7 +3,7 @@
 Cfevernote is a evernote api wrapper for ColdFusion that allows users to view notes and notebooks, create notes and notebooks, and search notes. 
 
 ## Installation
-See Wiki
+[See Wiki](https://github.com/bittersweetryan/cfevernote/wiki)
 
 ##TODO
 1. ~~Add notes~~
