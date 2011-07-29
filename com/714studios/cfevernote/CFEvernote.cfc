@@ -324,7 +324,7 @@ THE SOFTWARE.
 			return noteArray;
 		</cfscript>
 	</cffunction>
-	
+				
 	<cffunction name="addNote" returntype="com.714studios.cfevernote.Note" access="public" output="false" hint="I add a note to evernote" >
 		<cfargument name="note" type="com.714studios.cfevernote.Note" required="true" />
 		<cfscript>
@@ -370,6 +370,52 @@ THE SOFTWARE.
 			return arguments.note;
 		</cfscript>	
 	</cffunction>
+	
+	<cffunction name="updateNote" returntype="com.714studios.cfevernote.Note" access="public" output="false" hint="I add a note to evernote" >
+		<cfargument name="note" type="com.714studios.cfevernote.Note" required="true" />
+		<cfscript>
+			var tags = arguments.note.getTagNames();
+			var notebookGUID = arguments.note.getNotebookGUID();
+			
+			var javaNote = arguments.note.getNote();
+			
+			var temp = "";
+			
+			arguments.note.setDateUpdated(DateFormat(NOW(),"mm/dd/yyyy"));
+							
+			try{
+				//TODO: this need some rework, multiple if statements seem kludgy howver according to the cfdocs assigning a varialbe
+				//to javacast null can return unexpected results (http://livedocs.adobe.com/coldfusion/8/htmldocs/help.html?content=functions_in-k_45.html)
+				//no notebook or tags were set
+
+				if(NOT len(notebookGUID) AND NOT arrayLen(tags)){
+					instance.cfEvernote.updateNote(arguments.note.getGUID(),arguments.note.getContent(), arguments.note.getTitle(), null(),  javaCast("long",arguments.note.getUpdatedTickCount()), null());	
+				}
+				/*
+				//only notebook was set
+				else if(len(notebookGUID) AND NOT arrayLen(tags)){
+					instance.cfEvernote.updateNote(arguments.note.getGUID(),arguments.note.getContent(), arguments.note.getTitle(), notebookGUID, javaCast("long",arguments.note.getUpdatedTickCount()), null());
+				}
+				//only tags were set
+				else if(NOT len(notebookGUID) AND arrayLen(tags)){
+					instance.cfEvernote.updateNote(arguments.note.getGUID(),arguments.note.getContent(), arguments.note.getTitle(), null(), javaCast("long",arguments.note.getUpdatedTickCount()), javaCast("string[]",tags));
+				}
+				//everyting was set
+				else{
+					instance.cfEvernote.updateNote(arguments.note.getGUID(),arguments.note.getContent(), arguments.note.getTitle(), notebookGUID, javaCast("long",arguments.note.getUpdatedTickCount()), javaCast("string[]",tags));	
+				}
+				*/
+			}	
+			catch(any ex){
+				writedump(var=ex, abort=true);
+			}
+	
+			arguments.note.setNote(javaNote);
+			
+			return arguments.note;
+		</cfscript>	
+	</cffunction>
+	
 	
 	<cffunction name="reInitClassLoader" returntype="void" access="public" output="false" hint="I clear the classloader in the metadata" >
 		<cfscript>

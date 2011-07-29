@@ -62,6 +62,28 @@
 		</cfscript>
 	</cffunction>
 	
+	<cffunction name="testGetUpdated"  returntype="void" access="public" output="false" hint="I test getting the Updated date" >
+		<cfscript>
+			var expected = "1/1/1900";
+			var actual = variables.note.getDateUpdated();
+			
+			assertEquals(expected,actual);
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testSetUpdated"  returntype="void" access="public" output="false" hint="Test set date Updated" >
+		<cfscript>
+			var expected = "12/26/1990";
+			var actual = "";
+			
+			variables.note.setDateUpdated(expected);
+			
+			actual = variables.note.getDateUpdated();
+			
+			assertEquals(expected,actual);
+		</cfscript>
+	</cffunction>
+	
 	<cffunction name="testSetContentWithBlankReturnsDefault"  returntype="void" access="public" output="false" hint="" >
 		<cfscript>
 			var expected = '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd"><en-note></en-note>';
@@ -71,7 +93,7 @@
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="testGetTickCount"  returntype="void" access="public" output="false" hint="I test the getting the tickcount for a note" >
+	<cffunction name="testCreatedGetTickCount"  returntype="void" access="public" output="false" hint="I test the getting the tickcount for a note" >
 		<cfscript>
 			var expected = "1311768000000";
 			var actual = "";
@@ -79,6 +101,19 @@
 			variables.note.setDateCreated(createDateTime(2011,7,27,7,0,0));
 			
 			actual = variables.note.getCreatedTickCount();
+			
+			assertEquals(expected,actual);
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testUpdatedGetTickCount"  returntype="void" access="public" output="false" hint="I test the getting the tickcount for a note" >
+		<cfscript>
+			var expected = "1311768000000";
+			var actual = "";
+			
+			variables.note.setDateUpdated(createDateTime(2011,7,27,7,0,0));
+			
+			actual = variables.note.getUpdatedTickCount();
 			
 			assertEquals(expected,actual);
 		</cfscript>

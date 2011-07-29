@@ -205,6 +205,9 @@ public class CFEvernote {
     }
     
     public Notebook createNotebook(String name) throws Exception{
+        
+        this.checkInitialized();
+        
         Notebook notebook = new Notebook();
         
         notebook.setName(name);
@@ -240,6 +243,9 @@ public class CFEvernote {
     
     
     public ArrayList getNotesForNotebook(String notebookGUID, int maxNotes) throws Exception{
+        
+        this.checkInitialized();
+        
         Notebook notebook = new Notebook();
         
         notebook.setGuid(notebookGUID);
@@ -248,6 +254,8 @@ public class CFEvernote {
     }
     
     private ArrayList getNotesForNotebook(Notebook notebook, int maxNotes) throws Exception{
+        
+        this.checkInitialized();
         
         ArrayList<Note> notes = new ArrayList();
         NoteFilter filter = new NoteFilter();
@@ -265,6 +273,26 @@ public class CFEvernote {
         }
            
         return notes;
+    }
+    
+    public Note updateNote(String noteGUID, String content, String title, String notebookGUID, long updated, String[] tags) throws Exception{
+        
+        this.checkInitialized();
+        
+        Note note = this.noteStore.getNote(authToken, noteGUID, true, false, false, false);
+        
+        note.setContent(content);
+        note.setTitle(title);
+        note.setNotebookGuid(notebookGUID);
+        note.setUpdated(updated);
+        
+        if(tags != null){
+            addTagsToNote(tags,note);
+        }
+        
+        note = noteStore.updateNote(authToken, note);
+        
+        return note;
     }
     
     /***
@@ -289,12 +317,18 @@ public class CFEvernote {
         newNote.setCreated(created);
         
         if(tags != null){
-            for(String tag : tags){
-                newNote.addToTagNames(tag);
-            }
+            addTagsToNote(tags,newNote);
         }
         
         return createNote(newNote);
+    }
+    
+    private void addTagsToNote(String[] tags, Note note){
+      if(tags != null){
+            for(String tag : tags){
+                note.addToTagNames(tag);
+            }
+        }
     }
     
     private Note createNote(Note note) throws Exception{

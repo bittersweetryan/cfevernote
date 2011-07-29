@@ -84,6 +84,29 @@ THE SOFTWARE.
 		</cfscript>
 	</cffunction>
 	
+	<cffunction name="getDateUpdated" returntype="Date" access="public" output="false" hint="I get the date updated of this notebook" >
+		<cfscript>
+			if(isNumeric(instance.note.getUpdated()) AND instance.note.getUpdated() neq 0)
+				return dateFormat(dateAdd("s",instance.note.getUpdated()/1000,DateConvert("utc2Local", "January 1 1970 00:00")),"m/d/yyyy");
+			else
+				return "1/1/1900";
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="setDateUpdated" returntype="void" access="public" output="false" hint="I set the date updated." >
+		<cfargument name="dateUpdated" type="Date" required="false" default="1/1/1900" />
+		<cfscript>
+			var tickCount = dateDiff("s",DateConvert("utc2Local", "January 1 1970 00:00"), arguments.dateUpdated) * 1000;
+			instance.note.setUpdated(javaCast("Long",tickCount));
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="getUpdatedTickCount" returntype="numeric" access="public" output="false" hint="I get the unformated EPOCH date from the note object" >
+		<cfscript>
+			return instance.note.getUpdated();
+		</cfscript>
+	</cffunction>
+	
 	<cffunction name="setTitle" returntype="void" access="public" output="false" hint="I set this notes title." >
 		<cfargument name="title" type="String" required="false" default="" displayname="" />
 		<cfscript>

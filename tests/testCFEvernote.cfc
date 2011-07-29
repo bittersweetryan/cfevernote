@@ -336,6 +336,7 @@
 		</cfscript>
 	</cffunction>
 	
+	<!--- Need to test all code paths through create note! --->
 	<cffunction name="testCreateNoteWithNoTitleShouldReturnANoteObject"  returntype="void" access="public" output="false" hint="I test creating a note" >
 		<cfscript>
 			var expected = "";
@@ -345,21 +346,19 @@
 			var title = "Created - " & DateFormat(Now(),"mm/dd/yyyy");
 			var created = "756186845";
 			var guid = "2322-asda-23232";
-			var tags = ["coldFusion"];
+			var tags = arrayNew(1);
 			
 			//mock java note object, gets returned by cfevernote java object when a new note is created
 			var mockNote = variables.mockito.mock(variables.classLoader.create("com.evernote.edam.type.Note").getClass());
 			mockito.when(mockNote.getContent()).thenReturn(content);
-			//mockito.when(mockCFEvernote.createNote(content,title,javaCast("null",""),created,javaCast("null","")).thenReturn(mockNote);
-			mockito.when(mockCFEvernote.createNote(content,title,guid,created,javaCast("String[]",tags)).thenReturn(mockNote));
+			mockito.when(mockCFEvernote.createNote(content,title,javaCast("null",""),created,javaCast("null",""))).thenReturn(mockNote);
 			
 			//mock coldfusion note, gets returned by cfevernote coldfusion object when a note is created
-			var note = mock("com.714studios.cfevernote.Note","typeSafe");
+			var note = mock(createObject("component","com.714studios.cfevernote.Note"),"typeSafe");
 			
 			note.getContent().returns(content);
-			note.getTitle().returns(created);
-			note.getContent().returns(content);
-			note.getCreatedEPOCH().returns(created);
+			note.getTitle().returns(title);
+			note.getCreatedTickCount().returns(created);
 			note.getTagNames().returns(tags);
 			note.getNotebookGUID().returns(guid);
 			note.getNote().returns(mockNote);
@@ -371,10 +370,46 @@
 			assertSame(expected,actual);
 		</cfscript>
 	</cffunction>
+	
+	<!--- Need to test all code paths through update note! --->
+	<cffunction name="testUpdatingNoteWithNoTitleShouldReturnANoteObject"  returntype="void" access="public" output="false" hint="I test creating a note" >
+		<cfscript>
+			var expected = "";
+			var actual = "";
+			var guid = "342342w-23423-sef2134";
+			var notebookGUID = "234212313-afaea3-fa3ga3";
+			var content = '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd"><en-note><b>Hello World - Updated</b></en-note>';
+			var title = "Created - " & DateFormat(Now(),"mm/dd/yyyy");
+			var updated = "756186845";
+			var tags = arrayNew(1);
+			
+			//mock java note object, gets returned by cfevernote java object when a new note is created
+			var mockNote = variables.mockito.mock(variables.classLoader.create("com.evernote.edam.type.Note").getClass());
+			mockito.when(mockNote.getContent()).thenReturn(content);
+			mockito.when(mockCFEvernote.updateNote(guid,content,title,javaCast("null",""),updated,javaCast("null",""))).thenReturn(mockNote);
 
+			//mock coldfusion note, gets returned by cfevernote coldfusion object when a note is created
+			var note = mock(createObject("component","com.714studios.cfevernote.Note"),"typeSafe");
+			
+			note.getContent().returns(content);
+			note.getTitle().returns(title);
+			note.getUpdatedTickCount().returns(updated);
+			note.getTagNames().returns(tags);
+			note.getGUID().returns(guid);
+			note.getNotebookGUID().returns(notebookGUID);
+			note.getNote().returns(mockNote);
+			
+			expected = note;
+			
+			actual = variables.cfEvernote.updateNote(note);
+			
+			assertSame(expected,actual);
+		</cfscript>
+	</cffunction>
+	
 	<cffunction name="testCreateNotebookReturnsNotebook"  returntype="void" access="public" output="false" hint="I test creating a notebook" >
 		<cfscript>
-			var mock = mock("com.714studios.cfevernote.Notebook", "typeSafe");
+			var mock = mock(createObject("component","com.714studios.cfevernote.Notebook"), "typeSafe");
 			
 			mock.getName().returns("Test Notebook");
 			

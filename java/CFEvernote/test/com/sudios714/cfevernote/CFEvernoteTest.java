@@ -216,6 +216,29 @@ public class CFEvernoteTest {
         //object
     }
     
+     @Test
+    public void testUpdatingANote() throws Exception{
+         Note mockNote = mock(Note.class);
+         NoteStore.Client mockClient = mock(NoteStore.Client.class);
+        
+        instance.setNoteStore(mockClient);
+        
+        when(mockClient.updateNote(AUTH_TOKEN, mockNote)).thenReturn(mockNote);
+        when(mockNote.getContent()).thenReturn("Hello Note");
+        
+        String[] tags = new String[2];
+        
+        tags[0] = "tag";
+        tags[1] = "notherTag";
+        
+        Note updated = instance.updateNote("ABC123","Hello World","Hello Title","423432432",324232323,new String[0]);
+        
+        verify(mockClient.updateNote(AUTH_TOKEN, mockNote));
+        //becuase I can't mock the note object thats being created in the cfevernote class I can't
+        //do much more with this method until I can learn to verivy and mock based on a class instead of an actual
+        //object
+    }
+     
     @Test
     public void testCreatingANotebook() throws Exception{
         Notebook mockNotebook = mock(Notebook.class);
