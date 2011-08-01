@@ -8,11 +8,11 @@ Cfevernote is a evernote api wrapper for ColdFusion that allows users to view no
 ##TODO
 1. ~~Add notes~~
 2. ~~Add notebooks~~
-3. Edit Notes & Notebooks
+3. ~~Edit Notes~~
 4. Convert enml to HTML?
 5. Search notes
 6. Check valid enml
-7. Add convenence method to check if the evernote object is initialized
+7. Add convenence method to check if the evernote object is initialized, or trap errors from java object
 8. Add options for differnt verifcation screens
 9. Better Error Checking
 10. Note media   

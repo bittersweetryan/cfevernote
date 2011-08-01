@@ -66,10 +66,11 @@ THE SOFTWARE.
 		//search modifiers
 		instance.evernote.search.notModifier = "-";
 		instance.evernote.search.scopeModifiers = {notebook="notebook:",any="any:"};
-		instance.evernote.search.searchPropertyModifiers = {tag="tag:",title="intitie:",createdDate="created:",updatedDate="updated:",resourceType="resource:"};
+		instance.evernote.search.searchPropertyModifiers  = {tag="tag:",title="intitie:",createdDate="created:",updatedDate="updated:",resourceType="resource:"};
 		instance.evernote.search.searchAttributeModifiers = {latitude="latitude:",longitude="longitude:",altitude="altitude:",author="author:",
-															 source={word="source:app.ms.word",microsoft="source:app.ms.*",web="source:web.clip",email="source:mail.clip",
-															 emailMessage="source:mail.smtp",mobile="source:mobile.*"},recoType={hand="recoType:handwritten",all="recoType:*"}};
+															 source                              = {word="source:app.ms.word",microsoft="source:app.ms.*",web="source:web.clip",email="source:mail.clip",
+															 emailMessage                        = "source:mail.smtp",mobile="source:mobile.*"},recoType={hand="recoType:handwritten",all="recoType:*"}};
+
 		
 		//there are two constructors for the CFEvernote java class, one with all the user information and one with just setup information.
 		//here I'll use the one with setup information and use mutators to set the user information once we authenticate
@@ -80,7 +81,7 @@ THE SOFTWARE.
 		
 		
 	</cfscript>
-
+	
 	<cffunction name="init" returntype="CFEvernote" access="public" hint="Default constructor for the cfevernote plugin">
 		<cfargument name="apiAccount" type="string" required="false" default="" />
 		<cfargument name="apiKey" type="string" required="false" default="" />
