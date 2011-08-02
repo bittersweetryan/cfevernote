@@ -39,6 +39,9 @@ THE SOFTWARE.
 									INPUT="input", ISINDEX="isindex", LABEL="label", LAYER="layer", LEGEND="legend", LINK="link", MARQUEE="marquee", MENU="menu", 
 									META="meta", NOFRAMES="noframes", NOSCRIPT="noscript", OBJECT="object", OPTGROUP="optgroup", OPTION="option", PARAM="param", 
 									PLAINTEXT="plaintext", SCRIPT="script", SELECT="select", STYLE="style", TEXTAREA="textarea", XML="xml"};
+									
+		variables.dtdLocation = "http://xml.evernote.com/pub/enml2.dtd";
+		
 	</cfscript>
 	
 	<cffunction name="init" returntype="Note" access="public" output="false" hint="I construct the Note object" >
@@ -291,7 +294,7 @@ THE SOFTWARE.
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="validate" returntype="void" access="private" output="false" hint="I determin weather this notes content is valid or not" >
+	<cffunction name="validate" returntype="void" access="private" output="false" hint="I determin weather this note contains any invalid tags or not" >
 		<cfargument name="content" type="String" required="true" />
 		<cfscript>
 			for(key in variables.disallowedTags){
@@ -305,7 +308,7 @@ THE SOFTWARE.
 	
 	<cffunction name="getNoteHeader" returntype="String" access="private" output="false" hint="I return a default note header" >
 		<cfscript>
-			return '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd"><en-note>';
+			return '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE en-note SYSTEM "' & variables.dtdLocation & '"><en-note>';
 		</cfscript>
 	</cffunction>
 	

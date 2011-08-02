@@ -455,6 +455,14 @@ THE SOFTWARE.
 		</cfscript>
 	</cffunction>
 	
+	<cffunction name="validateENML" returntype="boolean" access="private" output="false" hint="I validate a notes enml against the evernote dtd" >
+		<cfargument name="note" type="com.714studios.cfevernote.Note" required="true" />
+		<cfscript>
+			var result = xmlValidate(arguments.note.getContent());
+			
+			return result.status;
+		</cfscript>
+	</cffunction>
 	<!--------------------------------------------
 	*   	     Mutaters and Accessors          *
 	--------------------------------------------->

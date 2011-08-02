@@ -418,4 +418,38 @@
 			actual = variables.cfEvernote.createNotebook(mock);
 		</cfscript>
 	</cffunction>
+	
+	<cffunction name="testValidateValidXMLReturnsTrue"  returntype="void" access="public" output="false" hint="I validate XML" >
+		<cfscript>
+			var expected = true;
+			var actual = "";
+			var content = '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd"><en-note><b>Hello World</b></en-note>';
+			var note = mock("com.714studios.cfevernote.Note","typeSafe");
+			
+			note.getContent().returns(content);
+			
+			makePublic(variables.cfEvernote,"validateENML");
+			
+			actual = variables.cfEvernote.validateENML(note);
+			
+			assertEquals(expected,actual);
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testValidateInValidXMLReturnsFalse"  returntype="void" access="public" output="false" hint="I validate XML" >
+		<cfscript>
+			var expected = true;
+			var actual = "";
+			var content = '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd"><en-note><blink>Hello World</blink></en-note>';
+			var note = mock("com.714studios.cfevernote.Note","typeSafe");
+			
+			note.getContent().returns(content);
+			
+			makePublic(variables.cfEvernote,"validateENML");
+			
+			actual = variables.cfEvernote.validateENML(note);
+			
+			assertEquals(expected,actual);
+		</cfscript>
+	</cffunction>
 </cfcomponent>
