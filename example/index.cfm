@@ -5,7 +5,7 @@
 	//its best to persist the cfevernote object in a scope since the oauth process will requires some state
 	if(NOT structKeyExists(session,"cfEvernote") OR isDefined("url.reset")){
 		
-		session.cfEvernote = new com.714studios.cfevernote.CFEvernote(configArray[1],configArray[2],"sandbox.evernote.com","http://localhost/cfevernote/example/index.cfm","#ExpandPath('../')#/lib");
+		session.cfEvernote = createObject(com.714studios.cfevernote.CFEvernote).init(configArray[1],configArray[2],"sandbox.evernote.com","http://localhost/cfevernote/example/index.cfm","#ExpandPath('../')#/lib");
 		//call the authenticateAPIUser, this will give you your temporaty credentials that you'll pass into evernote when the user verifies access
 		if(NOT session.cfEvernote.authenticateAPIUser()){
 			writeDump(var="API Key and Username were not authenticated by evernote",abort=true);
